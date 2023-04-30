@@ -1,0 +1,155 @@
+openapi: 3.0.0
+info:
+  version: "1.0.0"
+  title: "Gestion d'oeuvre sociale"
+  description: "API documentation"
+servers:
+  - url: "http://localhost:3000/api/v1"
+    variables: {}
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+paths:
+  /auth/register:
+    post:
+      tags:
+        - "Authentication"
+      summary: "Registers a new user"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User object"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              name:
+                type: "string"
+                minLength: 3
+                maxLength: 50
+                example: "John Doe"
+              email:
+                type: "string"
+                format: "email"
+                example: "johndoe@example.com"
+              password:
+                type: "string"
+                minLength: 6
+                example: "password123"
+      responses:
+        201:
+          description: "User registered successfully"
+          schema:
+            type: "object"
+            properties:
+              _id:
+                type: "string"
+                example: "613f7b11a24bb031683a1c2f"
+              name:
+                type: "string"
+                example: "John Doe"
+              email:
+                type: "string"
+                example: "johndoe@example.com"
+              role:
+                type: "string"
+                enum:
+                  - "admin"
+                  - "user"
+                example: "user"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequestError"
+  /auth/login:
+    post:
+      tags:
+        - "Authentication"
+      summary: "Logs in a user"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "User credentials"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              email:
+                type: "string"
+                format: "email"
+                example: "johndoe@example.com"
+              password:
+                type: "string"
+                example: "password123"
+      responses:
+        200:
+          description: "User logged in successfully"
+          schema:
+            type: "object"
+            properties:
+              user:
+                type: "object"
+                properties:
+                  _id:
+                    type: "string"
+                    example: "613f7b11a24bb031683a1c2f"
+                  name:
+                    type: "string"
+                    example: "John Doe"
+                  email:
+                    type: "string"
+                    example: "johndoe@example.com"
+                  role:
+                    type: "string"
+                    enum:
+                      - "admin"
+                      - "user"
+                    example: "user"
+              accessToken:
+                type: "string"
+                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              refreshToken:
+                type: "string"
+                example: "c431d12c7cbe68e1988a7eb6dbf2076e5d6a5b6f"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequest"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+  /auth/logout:
+    delete:
+      tags:
+        - "Authentication"
+
+components:
+  schemas:
+    BadRequestError:
+      type: object
+      properties:
+        message:
+          type: string
+          description: The error message
+      example:
+        message: Email already exists
+    BadRequest:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+      example:
+        message: Please provide email and password
+    Unauthenticated:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+      example:
+        message: Invalid Credentials
