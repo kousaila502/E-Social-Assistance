@@ -1,5 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
+
+
 const {
   authenticateUser,
   authorizePermissions,
@@ -13,13 +16,13 @@ const {
   getMySingleDemande,
   updateDemande,
   updateMyDemande,
-  deleteMyDemande,
+  upload
 } = require('../controllers/demande');
 
 
 router
   .route('/emp')
-  .post(authenticateUser, createDemande)
+  .post(authenticateUser, upload.single('doc'), createDemande)
   .get(authenticateUser,getMyDemandes);
 
 router
@@ -29,8 +32,7 @@ router
 router
   .route('/emp/:id')
   .get(authenticateUser, getMySingleDemande)
-  .patch(authenticateUser, updateMyDemande)
-  .delete(authenticateUser, deleteMyDemande);
+  .patch(authenticateUser, updateMyDemande);
 
 router
 .route('/admin/:id')

@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 
 const budgetSchema = new mongoose.Schema({
   montant: {
-    type: Number 
+    type: Number,
+    default:0,
+    required:true
   }
 });
 

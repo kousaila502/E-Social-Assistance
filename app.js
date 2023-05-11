@@ -1,5 +1,9 @@
 require("dotenv").config();
 require('express-async-errors');
+const {
+    authenticateUser,
+    authorizePermissions,
+  } = require('./middleware/authentication');
 
 //express
 const express = require('express');
@@ -18,10 +22,15 @@ const cors = require('cors');
 //database
 const connectDb = require('./db/connect');
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 //Routers
 const authRoutes = require('./routers/auth');
 const userRouter = require('./routers/user');
 const demandeRouter = require('./routers/demande');
+const annonceRouter = require('./routers/annonce');
+const budgetRouter = require('./routers/budget');
 
 //Middleware
 const notFoundMiddleware = require('./middleware/not-found');
@@ -29,8 +38,6 @@ const errorHandlerMiddleware = require('./middleware/error-handler');
 
 app.use(express.json());
 app.use(cookieParser(process.env.JWT_SECRET));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 
 app.get('/', (req, res) => {
@@ -41,8 +48,10 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use('/api/v1/auth/',authRoutes);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/demande', demandeRouter);
+app.use('/api/v1/annonce', annonceRouter);
+app.use('/api/v1/budget',[authenticateUser,authorizePermissions('admin')], budgetRouter);
 
-app.use(notFoundMiddleware);
+app.use(notFoundMiddleware); 
 app.use(errorHandlerMiddleware);
 
 

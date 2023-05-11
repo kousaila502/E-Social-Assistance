@@ -127,6 +127,463 @@ paths:
       tags:
         - "Authentication"
 
+
+        
+  /emp:
+    post:
+      tags:
+      - "Demandes"
+      summary: "Create a new demande"
+      description: "Creates a new demande for the authenticated user."
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Demande"
+      responses:
+        "201":
+          description: "The created demande"
+          schema:
+            $ref: "#/definitions/Demande"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+    get:
+      tags:
+      - "Demandes"
+      summary: "Get my demandes"
+      description: "Gets all the demandes created by the authenticated user."
+      responses:
+        "200":
+          description: "The list of demandes created by the authenticated user."
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Demande"
+        "401":
+            description: "Unauthorized"
+            schema:
+              $ref: "#/components/schemas/Unauthenticated"
+  /emp/{id}:
+    get:
+      tags:
+      - "Demandes"
+      summary: "Get a single demande"
+      description: "Gets the specified demande for the authenticated user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the demande to get"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The requested demande"
+          schema:
+            $ref: "#/definitions/Demande"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Demande not found"
+          schema:
+            $ref: "#/components/schemas/NotFound"
+    patch:
+      tags:
+      - "Demandes"
+      summary: "Update a single demande"
+      description: "Updates the specified demande for the authenticated user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the demande to update"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Demande"
+      responses:
+        "200":
+          description: "The updated demande"
+          schema:
+            $ref: "#/definitions/Demande"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/Unauthenticated"
+        "404":
+          description: "Demande not found"
+          schema:
+            $ref: "#/components/NotFound"
+  /admin:
+    get:
+      tags:
+      - "Demandes"
+      summary: "Get all demandes"
+      description: "Gets all demandes for the authenticated admin user."
+      responses:
+        "200":
+          description: "The list of demandes"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Demande"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/Unauthenticated"
+  /admin/{id}:
+    get:
+      tags:
+      - "Demandes"
+      summary: "Get a single demande"
+      description: "Gets the specified demande for the authenticated admin user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the demande to get"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The requested demande"
+          schema:
+            $ref: "#/definitions/Demande"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/Unauthenticated"
+        "404":
+          description: "Demande not found"
+          schema:
+            $ref: "#/components/NotFound"
+    patch:
+      tags:
+      - "Demandes"
+      summary: "Update a single demande"
+      description: "Updates the specified demande for the authenticated admin user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the demande to update"
+          required: true
+          type: "string"
+        - name: "demande"
+          in: "body"
+          description: "Demande object that needs to be updated"
+          required: true
+          schema:
+            $ref: "#/definitions/Demande"
+      responses:
+        "200":
+          description: "Demande updated successfully"
+          schema:
+            $ref: "#/definitions/Demande"
+        "401":
+            description: "Unauthorized"
+            schema:
+              $ref: "#/components/Unauthenticated"
+        "404":
+          description: "Demande not found"
+          schema:
+            $ref: "#/components/NotFound"
+  
+
+
+  /emp/getAllAnnonce/:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get all annonces"
+      description: "Gets all annonces for the authenticated employer user."
+      responses:
+        "200":
+          description: "The list of annonces"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/Unauthenticated"
+  /emp/suscribeAnnonce/{id}:
+    put:
+      tags:
+      - "Annonces"
+      summary: "Subscribe in annonce"
+      description: "Subscribe in a single annonce for the authenticated employer user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to Subscribe"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The annonce subscribed"
+          schema:
+            $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Annonce not found"
+          schema:
+            $ref: "#/components/schemas/NotFound"
+  /emp/desuscribeAnnonce/{id}:
+    put:
+      tags:
+      - "Annonces"
+      summary: "Desubscribe in annonce"
+      description: "Desubscribe in a single annonce for the authenticated employer user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to Desubscribe"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The annonce desubscribed"
+          schema:
+            $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Annonce not found"
+          schema:
+            $ref: "#/components/schemas/NotFound"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequestError"
+  /emp/getSingleAnnonce/{id}:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get a single annonce"
+      description: "Gets the specified annonce for the authenticated user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to get"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The requested annonce"
+          schema:
+            $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Demande not found"
+          schema:
+            $ref: "#/components/schemas/NotFound"
+  /emp/getMyAnnonces:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get my subscribed annonces"
+      description: "Gets all subscribed annonces for the authenticated employer user."
+      responses:
+       "200":
+          description: "The authenticated employer's annonces"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Annonce"
+
+       "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+
+  /admin/createAnnonce:
+    post:
+      tags:
+      - "Annonces"
+      summary: "Create a new annonce"
+      description: "Creates a new annonce for the authenticated admin user."
+      parameters:
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Annonce"
+      responses:
+        "201":
+          description: "The created annonce"
+          schema:
+            $ref: "#/definitions/annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+  /admin/getAllAnnonce/:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get all annonces"
+      description: "Gets all annonces for the authenticated admin user."
+      responses:
+        "200":
+          description: "The list of annonces"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/Unauthenticated"
+  /admin/getSingleAnnonce/{id}:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get a single annonce"
+      description: "Gets the specified annonce for the authenticated admin user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to get"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The requested annonce"
+          schema:
+            $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Annonce not found"
+          schema:
+            $ref: "#/components/schemas/NotFound"
+  /admin/updateAnnonce/{id}: 
+    put:
+      tags:
+      - "Annonces"
+      summary: "Update a single annonce"
+      description: "Updates the specified annonce for the authenticated admin user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to update"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/Annonce"
+      responses:
+        "200":
+          description: "The updated annonce"
+          schema:
+            $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/Unauthenticated"
+        "404":
+          description: "Annonce not found"
+          schema:
+            $ref: "#/components/NotFound"
+  /admin/getAllEmpInscrit/{id}:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get employers subscribed."
+      description: "Get all employers subscribed in a single annonce for the authenticated admin."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to get the employers subscribed"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The employers subscribed in requested annonce"
+          schema:
+            $ref: "#/definitions/User"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Annonce not found"
+          schema:
+            $ref: "#/components/schemas/NotFound" 
+  /admin/admisAnnonce/{id}:
+    put:
+      tags:
+      - "Annonces"
+      summary: "Add employer to winners liste of announce"
+      description: "Add employer to winners liste of a single annonce for the authenticated admin user."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to update"
+          required: true
+          type: "string"
+        - name: "id"
+          in: "body"
+          description: "ID of the winner employer"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The annonce subscribed"
+          schema:
+            $ref: "#/definitions/Annonce"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Annonce not found"
+          schema:
+            $ref: "#/components/schemas/NotFound" 
+  /admin/getAllEmpAdmis/{id}:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get the winners."
+      description: "Get all winners in a single annonce for the authenticated admin."
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the annonce to get the employers subscribed"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "The employers win in requested annonce"
+          schema:
+            $ref: "#/definitions/User"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+        "404":
+          description: "Annonce not found"
+          schema:
+            $ref: "#/components/schemas/NotFound" 
+
 components:
   schemas:
     BadRequestError:
@@ -153,3 +610,95 @@ components:
           description: Error message
       example:
         message: Invalid Credentials
+    NotFound:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+      example:
+        message: The requested resource was not found
+definitions:
+    Demande:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        user:
+          type: "string"
+        status:
+          type: "string"
+          enum:
+            - "pending"
+            - "rejected"
+            - "accepted"
+            - "paied"
+        description:
+          type: "string"
+        montant:
+          type: "number"
+        files:
+          type: "array"
+          items:
+            type: "string"
+      required:
+        - user
+        - status
+        - montant
+
+    Annonce:
+      type: "object"
+      properties:
+        description:
+          type: "string"
+        deadline:
+          type: "string"
+          format: "date"
+        emplInscrit:
+          type: "array"
+          items:
+            type: "string"
+            format: "uuid"
+        emplAdmis:
+          type: "array"
+          items:
+            type: "string"
+            format: "uuid"
+        createdAt:
+          type: "string"
+          format: "date-time"
+        updatedAt:
+          type: "string"
+          format: "date-time"
+      required:
+        - description
+        - deadline
+    User:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 3
+          maxLength: 50
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        role:
+          type: string
+          enum:
+            - admin
+            - user
+          default: user
+      example:
+        name: John Doe
+        email: john.doe@example.com
+        password: password123
+        role: user

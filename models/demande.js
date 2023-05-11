@@ -15,17 +15,13 @@ const demandeSchema = new mongoose.Schema({
   files: [{
     type: String
   }],
-  date: Date,
   user: {
     type: mongoose.Types.ObjectId,
     ref: 'User',
     required: true,
-  },
-  cacher: {
-    type: Boolean,
-    default: false
   }
-});
+},
+{ timestamps: true });
 
 
 

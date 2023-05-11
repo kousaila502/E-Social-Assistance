@@ -1,21 +1,17 @@
 const mongoose = require('mongoose');
-const User = require('./user')
+
 
 const annonceSchema = new mongoose.Schema({
   description: {
     type: String,
+    required: true
   },
-  date: Date,
-  deadline: Date,
-  emplInscrit: {
-    type: mongoose.Schema.objectId,
-    ref: User
-  },
-  emplAdmis: {
-    type: mongoose.Schema.objectId,
-    ref: User
+  deadline:  {
+    type: Date,
+    required: true
   }
-});
+},
+{ timestamps: true });
 
 
 

@@ -6,6 +6,7 @@ const crypto = require('crypto');
 const {
     attachCookiesToResponse
   } = require('../utils/jwt');
+const sendResetPasswordEmail = require('../utils/sendResetPasswordEmail');
 
 const register = async (req, res) => {
    
@@ -75,9 +76,28 @@ const register = async (req, res) => {
   };
 
 
-const forgotPassword = (req,res)=>{
-    res.send('register..')
-}
+  const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    if (!email) {
+      throw new CustomError.BadRequestError('Please provide valid email');
+    }
+  
+    const user = await User.findOne({ email });
+  
+    if (user) {
+      // send email
+      const origin = 'http://localhost:3000';
+      await sendResetPasswordEmail({
+        name: user.name,
+        email: user.email,
+        origin,
+      });
+    }
+  
+    res
+      .status(StatusCodes.OK)
+      .json({ msg: 'Please check your email for reset password link' });
+  };
 
 module.exports = {
     register,

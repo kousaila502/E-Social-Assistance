@@ -2,21 +2,61 @@ const Demande = require('../models/demande');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
+const multer = require('multer')
+
 const { checkPermissions } = require('../utils/checkPermissions');
+
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb)=>{
+    cb(null, './uploads/')
+  },
+  filename: (req, file, cb)=>{
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1 * 1024 * 1024 },
+  fileFilter: (req, file, callback) => {
+    const acceptableExtensions = ['pdf']
+    if (!(acceptableExtensions.some(extension => 
+        path.extname(file.originalname).toLowerCase() === `.${extension}`)
+    )) {
+        return callback(new CustomError.BadRequestError(`Extension not allowed, accepted extensions are ${acceptableExtensions.join(',')}`))
+    }
+    callback(null, true)
+  }
+});
 
 const createDemande = async (req, res) => {
   req.body.user = req.user.userId;
+  req.body.files = req.file.path;
   const demande = await Demande.create(req.body);
   res.status(StatusCodes.CREATED).json({ demande });
 };
-const getAllDemande = async (req, res) => {
-  const demandes = await Demande.find({});
 
-  res.status(StatusCodes.OK).json({ demandes, count: demandes.length });
+const getAllDemande = async (req, res) => {
+  const { status } = req.query;
+  const queryObject = {};
+
+  if(status){
+    queryObject.status = status;
+  }else{
+    queryObject.status = "pending";
+  }
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const result = await Demande.find(queryObject).skip(skip).limit(limit);
+
+  res.status(StatusCodes.OK).json({ result, count: result.length });
 };
 const getMyDemandes = async (req, res) => {
   const userId = req.user.userId;
-  const demandes = await Demande.find({user: userId, status: false });
+  const demandes = await Demande.find({user: userId });
 
   res.status(StatusCodes.OK).json({ demandes, count: demandes.length });
 };
@@ -69,24 +109,7 @@ const updateDemande = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ demande });
 };
-const deleteMyDemande = async (req, res) => {
-  const { id: demandeId } = req.params;
 
-  const demande = await Demande.findOne({ _id: demandeId });
-
-  if (!demande) {
-    throw new CustomError.NotFoundError(`No demande with id : ${demandeId}`);
-  }
-  checkPermissions(req.user,demande.user);
-
-  if (demande.status !== 'paied') {
-    throw new CustomError.BadRequestError(`You can't delete your demande till the end of the process..`);
-  }
-  
-  demande.cacher = true;
-  await demande.save();
-  res.status(StatusCodes.OK).json({ msg: 'Success! demande cached.' });
-};
 
 
 
@@ -98,5 +121,5 @@ module.exports = {
   getMySingleDemande,
   updateDemande,
   updateMyDemande,
-  deleteMyDemande,
+  upload
 };
