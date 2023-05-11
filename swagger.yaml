@@ -295,7 +295,7 @@ paths:
   
 
 
-  /emp/getAllAnnonce/:
+  /emp/getAllAnnonce:
     get:
       tags:
       - "Annonces"
@@ -313,7 +313,7 @@ paths:
           schema:
             $ref: "#/components/Unauthenticated"
   /emp/suscribeAnnonce/{id}:
-    put:
+    post:
       tags:
       - "Annonces"
       summary: "Subscribe in annonce"
@@ -328,7 +328,7 @@ paths:
         "200":
           description: "The annonce subscribed"
           schema:
-            $ref: "#/definitions/Annonce"
+            $ref: "#/definitions/AnnonceEmpInscrits"
         "401":
           description: "Unauthorized"
           schema:
@@ -338,7 +338,7 @@ paths:
           schema:
             $ref: "#/components/schemas/NotFound"
   /emp/desuscribeAnnonce/{id}:
-    put:
+    delete:
       tags:
       - "Annonces"
       summary: "Desubscribe in annonce"
@@ -353,7 +353,7 @@ paths:
         "200":
           description: "The annonce desubscribed"
           schema:
-            $ref: "#/definitions/Annonce"
+            $ref: "#/definitions/AnnonceEmpAdmits"
         "401":
           description: "Unauthorized"
           schema:
@@ -391,7 +391,7 @@ paths:
           description: "Demande not found"
           schema:
             $ref: "#/components/schemas/NotFound"
-  /emp/getMyAnnonces:
+  /emp/getMyAnnonce:
     get:
       tags:
       - "Annonces"
@@ -403,7 +403,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Annonce"
+              $ref: "#/definitions/AnnonceEmpInscrits"
 
        "401":
           description: "Unauthorized"
@@ -431,7 +431,7 @@ paths:
           description: "Unauthorized"
           schema:
             $ref: "#/components/schemas/Unauthenticated"
-  /admin/getAllAnnonce/:
+  /admin/getAllAnnonce:
     get:
       tags:
       - "Annonces"
@@ -519,7 +519,7 @@ paths:
         "200":
           description: "The employers subscribed in requested annonce"
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/AnnonceEmpInscrits"
         "401":
           description: "Unauthorized"
           schema:
@@ -529,7 +529,7 @@ paths:
           schema:
             $ref: "#/components/schemas/NotFound" 
   /admin/admisAnnonce/{id}:
-    put:
+    post:
       tags:
       - "Annonces"
       summary: "Add employer to winners liste of announce"
@@ -549,7 +549,7 @@ paths:
         "200":
           description: "The annonce subscribed"
           schema:
-            $ref: "#/definitions/Annonce"
+            $ref: "#/definitions/AnnonceEmpAdmits"
         "401":
           description: "Unauthorized"
           schema:
@@ -574,7 +574,7 @@ paths:
         "200":
           description: "The employers win in requested annonce"
           schema:
-            $ref: "#/definitions/User"
+            $ref: "#/definitions/AnnonceEmpAdmits"
         "401":
           description: "Unauthorized"
           schema:
@@ -583,6 +583,23 @@ paths:
           description: "Annonce not found"
           schema:
             $ref: "#/components/schemas/NotFound" 
+
+  /admin/getWinners:
+    get:
+      tags:
+      - "Annonces"
+      summary: "Get all winners of all annonces ."
+      description: "Get all winners in every annonce for the authenticated admin."
+      responses:
+        "200":
+          description: "The winners employer with the annonce"
+          schema:
+            $ref: "#/definitions/AnnonceEmpAdmits"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+
 
 components:
   schemas:
@@ -648,32 +665,63 @@ definitions:
         - montant
 
     Annonce:
-      type: "object"
+      type: object
       properties:
+        _id:
+          type: string
+          format: uuid
         description:
-          type: "string"
+          type: string
+          description: The description of the Annonce
         deadline:
-          type: "string"
-          format: "date"
-        emplInscrit:
-          type: "array"
-          items:
-            type: "string"
-            format: "uuid"
-        emplAdmis:
-          type: "array"
-          items:
-            type: "string"
-            format: "uuid"
+          type: string
+          format: date-time
+          description: The deadline of the Annonce
         createdAt:
-          type: "string"
-          format: "date-time"
+          type: string
+          format: date-time
         updatedAt:
-          type: "string"
-          format: "date-time"
+          type: string
+          format: date-time
+
+    AnnonceEmpInscrits:
+      type: object
+      properties:
+        annonce:
+          type: string
+          format: uuid
+          description: The ID of the annonce.
+        emplInscrits:
+          type: string
+          format: uuid
+          description: The ID of the employee who applied to the annonce.
+        status:
+          type: string
+          enum: ['pending', 'rejected']
+          default: 'pending'
+          description: The status of the application.
       required:
-        - description
-        - deadline
+        - annonce
+        - emplInscrits
+    
+    AnnonceEmpAdmits:
+      type: object
+      properties:
+        annonce:
+          type: string
+          description: The ID of the associated Annonce object.
+        empAdmis:
+          type: string
+          description: The ID of the associated User object.
+        status:
+          type: string
+          enum: ['not-paied', 'paied']
+          default: 'not-paied'
+          description: The status of the employee's payment for the given annonce.
+      required:
+        - annonce
+        - empAdmis
+
     User:
       type: object
       required:
