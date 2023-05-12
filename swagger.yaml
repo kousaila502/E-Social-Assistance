@@ -607,11 +607,11 @@ paths:
         "401":
           description: "Unauthorized"
           schema:
-            $ref: "#/components/Unauthenticated"
+            $ref: "#/components/schemas/Unauthenticated"
         "404":
           description: "Annonce not found"
           schema:
-            $ref: "#/components/NotFound"
+            $ref: "#/components/schemas/NotFound"
   /annonce/admin/getAllEmpInscrit/{id}:
     get:
       tags:

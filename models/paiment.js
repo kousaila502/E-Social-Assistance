@@ -1,27 +1,51 @@
 const mongoose = require('mongoose');
-const User = require('./user')
 
 const paimentSchema = new mongoose.Schema({
   mode: {
     type: String,
+    required: true
   },
   nPiece: {
-    type: Number 
+    type: Number,
+    required: true 
   },
-  date: Date,
-  user: {
-    type: mongoose.Schema.objectId,
-    ref: User
+  source: {
+    type: {
+      type: String,
+      enum: ['User', 'BudgetPool'],
+      required: true
+    },
+    id: {
+      type: mongoose.Types.ObjectId,
+      required: true
+    },
+    ref: {
+      type: String,
+      required: true
+    }
+  },
+  destination: {
+    type: {
+      type: String,
+      enum: ['User', 'BudgetPool'],
+      required: true
+    },
+    id: {
+      type: mongoose.Types.ObjectId,
+      required: true
+    },
+    ref: {
+      type: String,
+      required: true
+    }
   },
   demande: {
-    type: mongoose.Schema.objectId,
+    type: mongoose.Types.ObjectId,
     ref: Demande
-  },
-  pret: {
-    type: mongoose.Schema.objectId,
-    ref: Pret
   }
-});
+},
+{ timestamps: true });
+
 
 
 

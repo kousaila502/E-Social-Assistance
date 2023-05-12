@@ -30,7 +30,7 @@ const authRoutes = require('./routers/auth');
 const userRouter = require('./routers/user');
 const demandeRouter = require('./routers/demande');
 const annonceRouter = require('./routers/annonce');
-const budgetRouter = require('./routers/budget');
+const budgetRouter = require('./routers/budgetPool');
 
 //Middleware
 const notFoundMiddleware = require('./middleware/not-found');
