@@ -127,9 +127,118 @@ paths:
       tags:
         - "Authentication"
 
+  /users/:
+    get:
+      tags:
+        - "Users"
+      summary: "Get all users"
+      description: "Get all users with role 'user'"
+      responses:
+        "201":
+          description: "All user"
+          schema:
+            $ref: "#/definitions/User"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
 
+  /users/deleteUsers:
+    delete:
+      tags:
+        - "Users"
+      summary: "Delete all users"
+      description: "Delete all users with role 'user'"
+      responses:
+        "201":
+          description: "all users are deleted.."
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+  /users/showMe:
+    get:
+      tags:
+        - "Users"
+      summary: "Get current user"
+      description: "Get information about the currently authenticated user"
+      responses:
+        "201":
+          description: "The currently authenticated user"
+          schema:
+            $ref: "#/definitions/User"
+        "401":
+          description: "Unauthorized"
+          schema:
+            $ref: "#/components/schemas/Unauthenticated"
+  /users/updateUser:
+    patch:
+      tags:
+        - "Users"
+      summary: "Update current user"
+      description: "Update the email and name of the currently authenticated user"
+      parameters:
+        - name: "Update User Request Body"
+          in: "body"
+          description: "JSON object containing email and name fields"
+          required: true
+      responses:
+        200:
+          description: "User updated"
+          schema:
+            $ref: "#/definitions/User"
+  /users/updateUserPassword:
+    patch:
+      tags:
+        - "Users"
+      summary: "Update user password"
+      description: "Update the password of the currently authenticated user"
+      parameters:
+        - name: "Update Password Request Body"
+          in: "body"
+          description: "JSON object containing oldPassword and newPassword fields"
+          required: true
+      responses:
+        200:
+          description: "Successful operation"
+  /users/{id}:
+    get:
+      tags:
+        - "Users"
+      summary: "Get user by ID"
+      description: "Get information about a specific user"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the user"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "User requested"
+          schema:
+            $ref: "#/definitions/User"
+  /users/deleteSingleUser/{id}:
+    delete:
+      tags:
+        - "Users"
+      summary: "Delete user by ID"
+      description: "Delete a specific user by ID"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "ID of the user"
+          required: true
+          type: "string"
+      responses:
+        200:
+          description: "Deleted user"
         
-  /emp:
+  /demande/emp:
     post:
       tags:
       - "Demandes"
@@ -166,7 +275,7 @@ paths:
             description: "Unauthorized"
             schema:
               $ref: "#/components/schemas/Unauthenticated"
-  /emp/{id}:
+  /demande/emp/{id}:
     get:
       tags:
       - "Demandes"
@@ -220,7 +329,7 @@ paths:
           description: "Demande not found"
           schema:
             $ref: "#/components/NotFound"
-  /admin:
+  /demande/admin:
     get:
       tags:
       - "Demandes"
@@ -237,7 +346,7 @@ paths:
           description: "Unauthorized"
           schema:
             $ref: "#/components/Unauthenticated"
-  /admin/{id}:
+  /demande/admin/{id}:
     get:
       tags:
       - "Demandes"
@@ -295,7 +404,7 @@ paths:
   
 
 
-  /emp/getAllAnnonce:
+  /annonce/emp/getAllAnnonce:
     get:
       tags:
       - "Annonces"
@@ -312,7 +421,7 @@ paths:
           description: "Unauthorized"
           schema:
             $ref: "#/components/Unauthenticated"
-  /emp/suscribeAnnonce/{id}:
+  /annonce/emp/suscribeAnnonce/{id}:
     post:
       tags:
       - "Annonces"
@@ -337,7 +446,7 @@ paths:
           description: "Annonce not found"
           schema:
             $ref: "#/components/schemas/NotFound"
-  /emp/desuscribeAnnonce/{id}:
+  /annonce/emp/desuscribeAnnonce/{id}:
     delete:
       tags:
       - "Annonces"
@@ -366,7 +475,7 @@ paths:
           description: "Bad request"
           schema:
             $ref: "#/components/schemas/BadRequestError"
-  /emp/getSingleAnnonce/{id}:
+  /annonce/emp/getSingleAnnonce/{id}:
     get:
       tags:
       - "Annonces"
@@ -391,7 +500,7 @@ paths:
           description: "Demande not found"
           schema:
             $ref: "#/components/schemas/NotFound"
-  /emp/getMyAnnonce:
+  /annonce/emp/getMyAnnonce:
     get:
       tags:
       - "Annonces"
@@ -410,7 +519,7 @@ paths:
           schema:
             $ref: "#/components/schemas/Unauthenticated"
 
-  /admin/createAnnonce:
+  /annonce/admin/createAnnonce:
     post:
       tags:
       - "Annonces"
@@ -431,7 +540,7 @@ paths:
           description: "Unauthorized"
           schema:
             $ref: "#/components/schemas/Unauthenticated"
-  /admin/getAllAnnonce:
+  /annonce/admin/getAllAnnonce:
     get:
       tags:
       - "Annonces"
@@ -448,7 +557,7 @@ paths:
           description: "Unauthorized"
           schema:
             $ref: "#/components/Unauthenticated"
-  /admin/getSingleAnnonce/{id}:
+  /annonce/admin/getSingleAnnonce/{id}:
     get:
       tags:
       - "Annonces"
@@ -473,7 +582,7 @@ paths:
           description: "Annonce not found"
           schema:
             $ref: "#/components/schemas/NotFound"
-  /admin/updateAnnonce/{id}: 
+  /annonce/admin/updateAnnonce/{id}: 
     put:
       tags:
       - "Annonces"
@@ -503,7 +612,7 @@ paths:
           description: "Annonce not found"
           schema:
             $ref: "#/components/NotFound"
-  /admin/getAllEmpInscrit/{id}:
+  /annonce/admin/getAllEmpInscrit/{id}:
     get:
       tags:
       - "Annonces"
@@ -528,7 +637,7 @@ paths:
           description: "Annonce not found"
           schema:
             $ref: "#/components/schemas/NotFound" 
-  /admin/admisAnnonce/{id}:
+  /annonce/admin/admisAnnonce/{id}:
     post:
       tags:
       - "Annonces"
@@ -558,7 +667,7 @@ paths:
           description: "Annonce not found"
           schema:
             $ref: "#/components/schemas/NotFound" 
-  /admin/getAllEmpAdmis/{id}:
+  /annonce/admin/getAllEmpAdmis/{id}:
     get:
       tags:
       - "Annonces"
@@ -584,7 +693,7 @@ paths:
           schema:
             $ref: "#/components/schemas/NotFound" 
 
-  /admin/getWinners:
+  /annonce/admin/getWinners:
     get:
       tags:
       - "Annonces"
