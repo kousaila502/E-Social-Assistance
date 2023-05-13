@@ -24,42 +24,13 @@ paths:
           description: "User object"
           required: true
           schema:
-            type: "object"
-            properties:
-              name:
-                type: "string"
-                minLength: 3
-                maxLength: 50
-                example: "John Doe"
-              email:
-                type: "string"
-                format: "email"
-                example: "johndoe@example.com"
-              password:
-                type: "string"
-                minLength: 6
-                example: "password123"
+            $ref: "#/definitions/User"
+          
       responses:
         201:
           description: "User registered successfully"
           schema:
-            type: "object"
-            properties:
-              _id:
-                type: "string"
-                example: "613f7b11a24bb031683a1c2f"
-              name:
-                type: "string"
-                example: "John Doe"
-              email:
-                type: "string"
-                example: "johndoe@example.com"
-              role:
-                type: "string"
-                enum:
-                  - "admin"
-                  - "user"
-                example: "user"
+            $ref: "#/definitions/User"
         400:
           description: "Bad request"
           schema:
@@ -80,9 +51,11 @@ paths:
               email:
                 type: "string"
                 format: "email"
+                required: true
                 example: "johndoe@example.com"
               password:
                 type: "string"
+                required: true
                 example: "password123"
       responses:
         200:
@@ -178,15 +151,29 @@ paths:
       summary: "Update current user"
       description: "Update the email and name of the currently authenticated user"
       parameters:
-        - name: "Update User Request Body"
-          in: "body"
-          description: "JSON object containing email and name fields"
-          required: true
+       - in: "body"
+         name: "body"
+         description: "User credentials"
+         required: true
+         schema:
+           type: "object"
+           properties:
+             email:
+               type: "string"
+               format: "email"
+               example: "johndoe@example.com"
+             name:
+               type: "string"
+               example: "johndoe"
       responses:
         200:
           description: "User updated"
           schema:
             $ref: "#/definitions/User"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequest"
   /users/updateUserPassword:
     patch:
       tags:
@@ -198,17 +185,28 @@ paths:
           in: "body"
           description: "JSON object containing oldPassword and newPassword fields"
           required: true
+          schema:
+            oldPassword:
+                type: "string"
+                example: "oldPassword"
+                required: true
+            newPassword:
+                type: "string"
+                example: "newPassword"
+                required: true
       responses:
         200:
           description: "Successful operation"
+        400:
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequest"
   /users/{id}:
     get:
       tags:
         - "Users"
       summary: "Get user by ID"
       description: "Get information about a specific user"
-      produces:
-        - "application/json"
       parameters:
         - name: "id"
           in: "path"
@@ -226,8 +224,6 @@ paths:
         - "Users"
       summary: "Delete user by ID"
       description: "Delete a specific user by ID"
-      produces:
-        - "application/json"
       parameters:
         - name: "id"
           in: "path"
@@ -249,7 +245,17 @@ paths:
           in: "body"
           required: true
           schema:
-            $ref: "#/definitions/Demande"
+            type: "object"
+            properties:
+              description:
+                type: "string"
+                example: "demande of a birthday prime.."
+              montant:
+                type: "number"
+                example: "500000"
+              files:
+                type: "string"
+                example: "doc.pdf"
       responses:
         "201":
           description: "The created demande"
@@ -259,6 +265,10 @@ paths:
           description: "Unauthorized"
           schema:
             $ref: "#/components/schemas/Unauthenticated"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequest"
     get:
       tags:
       - "Demandes"
@@ -315,7 +325,17 @@ paths:
           in: "body"
           required: true
           schema:
-            $ref: "#/definitions/Demande"
+            type: "object"
+            properties:
+              description:
+                type: "string"
+                example: "demande of a birthday prime.."
+              montant:
+                type: "number"
+                example: "500000"
+              files:
+                type: "string"
+                example: "doc.pdf"
       responses:
         "200":
           description: "The updated demande"
@@ -324,11 +344,15 @@ paths:
         "401":
           description: "Unauthorized"
           schema:
-            $ref: "#/components/Unauthenticated"
+            $ref: "#/components/schemas/Unauthenticated"
         "404":
           description: "Demande not found"
           schema:
-            $ref: "#/components/NotFound"
+            $ref: "#/components/schemas/NotFound"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequest"
   /demande/admin:
     get:
       tags:
@@ -345,7 +369,7 @@ paths:
         "401":
           description: "Unauthorized"
           schema:
-            $ref: "#/components/Unauthenticated"
+            $ref: "#/components/schemas/Unauthenticated"
   /demande/admin/{id}:
     get:
       tags:
@@ -366,41 +390,35 @@ paths:
         "401":
           description: "Unauthorized"
           schema:
-            $ref: "#/components/Unauthenticated"
+            $ref: "#/components/schemas/Unauthenticated"
         "404":
           description: "Demande not found"
           schema:
-            $ref: "#/components/NotFound"
+            $ref: "#/components/schemas/NotFound"
     patch:
       tags:
       - "Demandes"
-      summary: "Update a single demande"
-      description: "Updates the specified demande for the authenticated admin user."
+      summary: "acctept a demande "
+      description: "Updates the specified demande status for the authenticated admin user ."
       parameters:
         - name: "id"
           in: "path"
           description: "ID of the demande to update"
           required: true
           type: "string"
-        - name: "demande"
-          in: "body"
-          description: "Demande object that needs to be updated"
-          required: true
-          schema:
-            $ref: "#/definitions/Demande"
       responses:
         "200":
-          description: "Demande updated successfully"
+          description: "Demande accepted successfully"
           schema:
             $ref: "#/definitions/Demande"
         "401":
             description: "Unauthorized"
             schema:
-              $ref: "#/components/Unauthenticated"
+              $ref: "#/components/schemas/Unauthenticated"
         "404":
           description: "Demande not found"
           schema:
-            $ref: "#/components/NotFound"
+            $ref: "#/components/schemas/NotFound"
   
 
 
@@ -420,7 +438,7 @@ paths:
         "401":
           description: "Unauthorized"
           schema:
-            $ref: "#/components/Unauthenticated"
+            $ref: "#/components/schemas/Unauthenticated"
   /annonce/emp/suscribeAnnonce/{id}:
     post:
       tags:
@@ -530,16 +548,29 @@ paths:
           in: "body"
           required: true
           schema:
-            $ref: "#/definitions/Annonce"
+            type: "object"
+            properties:
+              description:
+                type: "string"
+                example: "Umrah"
+                required: true
+              deadline:
+                type: "date"
+                example: "2023-05-24"
+                required: true
       responses:
         "201":
           description: "The created annonce"
           schema:
-            $ref: "#/definitions/annonce"
+            $ref: "#/definitions/Annonce"
         "401":
           description: "Unauthorized"
           schema:
             $ref: "#/components/schemas/Unauthenticated"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequest"
   /annonce/admin/getAllAnnonce:
     get:
       tags:
@@ -556,7 +587,7 @@ paths:
         "401":
           description: "Unauthorized"
           schema:
-            $ref: "#/components/Unauthenticated"
+            $ref: "#/components/schemas/Unauthenticated"
   /annonce/admin/getSingleAnnonce/{id}:
     get:
       tags:
@@ -598,7 +629,14 @@ paths:
           in: "body"
           required: true
           schema:
-            $ref: "#/definitions/Annonce"
+            type: "object"
+            properties:
+              description:
+                type: "string"
+                example: "Umrah"
+              deadline:
+                type: "date"
+                example: "2023-05-24"
       responses:
         "200":
           description: "The updated annonce"
@@ -612,6 +650,10 @@ paths:
           description: "Annonce not found"
           schema:
             $ref: "#/components/schemas/NotFound"
+        "400":
+          description: "Bad request"
+          schema:
+            $ref: "#/components/schemas/BadRequest"
   /annonce/admin/getAllEmpInscrit/{id}:
     get:
       tags:
@@ -838,22 +880,29 @@ definitions:
         - email
         - password
       properties:
+        _id:
+          type: "string"
+          example: "613f7b11a24bb031683a1c2f"
         name:
           type: string
           minLength: 3
           maxLength: 50
+          example: "John Doe"
         email:
           type: string
           format: email
+          example: "johndoe@example.com"
         password:
           type: string
           minLength: 6
+          example: "password123456"
         role:
           type: string
           enum:
             - admin
             - user
           default: user
+          example: "user"
       example:
         name: John Doe
         email: john.doe@example.com
