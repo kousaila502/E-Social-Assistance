@@ -1,4 +1,5 @@
 const Demande = require('../models/demande');
+
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
@@ -85,6 +86,7 @@ const getMySingleDemande = async (req, res) => {
 };
 const updateMyDemande = async (req, res) => {
   const { id: demandeId } = req.params;
+  
   const demande = await Demande.findOneAndUpdate({ _id: demandeId, user: req.user.userId }, req.body, {
     new: true,
     runValidators: true,
@@ -98,6 +100,7 @@ const updateMyDemande = async (req, res) => {
 };
 const updateDemande = async (req, res) => {
   const { id: demandeId } = req.params;
+
   const demande = await Demande.findOneAndUpdate({ _id: demandeId }, { status: req.body.status }, {
     new: true,
     runValidators: true,

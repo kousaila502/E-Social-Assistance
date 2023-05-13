@@ -1,50 +1,48 @@
 const mongoose = require('mongoose');
 
-const paimentSchema = new mongoose.Schema({
-  mode: {
-    type: String,
-    required: true
-  },
-  nPiece: {
-    type: Number,
-    required: true 
-  },
-  source: {
-    type: {
+const paimentSchema = new mongoose.Schema(
+  {
+    mode: {
       type: String,
-      enum: ['User', 'BudgetPool'],
-      required: true
     },
-    id: {
+    nPiece: {
+      type: Number,
+    },
+    date: Date,
+    source: {
+      type: {
+        type: String,
+        enum: ['User', 'BudgetPool'],
+        required: true,
+      },
+      id: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        refPath: 'source.type',
+      },
+    },
+    destination: {
+      type: {
+        type: String,
+        enum: ['User', 'BudgetPool'],
+        required: true,
+      },
+      id: {
+        type: mongoose.Types.ObjectId,
+        required: true,
+        refPath: 'destination.type',
+      },
+    },
+    demande: {
       type: mongoose.Types.ObjectId,
-      required: true
+      ref: 'Demande',
     },
-    ref: {
-      type: String,
-      required: true
-    }
   },
-  destination: {
-    type: {
-      type: String,
-      enum: ['User', 'BudgetPool'],
-      required: true
-    },
-    id: {
-      type: mongoose.Types.ObjectId,
-      required: true
-    },
-    ref: {
-      type: String,
-      required: true
-    }
-  },
-  demande: {
-    type: mongoose.Types.ObjectId,
-    ref: Demande
-  }
-},
-{ timestamps: true });
+  { timestamps: true }
+);
+
+
+
 
 
 

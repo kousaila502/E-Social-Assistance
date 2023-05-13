@@ -19,6 +19,10 @@ const demandeSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: 'User',
     required: true,
+  },
+  paiment: {
+    type: mongoose.Types.ObjectId,
+    ref: 'Paiment'
   }
 },
 { timestamps: true });
