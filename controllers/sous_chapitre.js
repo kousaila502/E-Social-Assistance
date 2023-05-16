@@ -19,7 +19,7 @@ const getAllSousChapitres = async (req, res) => {
 const getSingleSousChapitre = async (req, res) => {
   const { id: chapitreId } = req.params;
 
-  const sousChapitre = await SousChapitre.findOne({ _id: chapitreId });
+  const sousChapitre = await SousChapitre.findOne({ _id: chapitreId }).populate('article');
 
   if (!sousChapitre) {
     throw new CustomError.NotFoundError(`No sous chapitre with id : ${chapitreId}`);

@@ -32,6 +32,7 @@ const demandeRouter = require('./routers/demande');
 const annonceRouter = require('./routers/annonce');
 const articleRouter = require('./routers/article');
 const sousChapitreRouter = require('./routers/sous_chapitre');
+const chapitreRouter = require('./routers/chapitre');
 const budgetRouter = require('./routers/budgetPool');
 const paimentRouter = require('./routers/paiment');
 
@@ -54,6 +55,7 @@ app.use('/api/v1/demande', demandeRouter);
 app.use('/api/v1/annonce', annonceRouter);
 app.use('/api/v1/article', articleRouter);
 app.use('/api/v1/sousChapitre', sousChapitreRouter);
+app.use('/api/v1/chapitre', chapitreRouter);
 app.use('/api/v1/budget',[authenticateUser,authorizePermissions('admin')], budgetRouter);
 app.use('/api/v1/paiment',[authenticateUser,authorizePermissions('admin')], paimentRouter);
 
