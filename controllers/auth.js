@@ -43,12 +43,12 @@ const register = async (req, res) => {
     const user = await User.findOne({ email });
   
     if (!user) {
-      throw new CustomError.UnauthenticatedError('Invalid Credentials');
+      throw new CustomError.UnauthenticatedError('User Not Found!');
     }
     const isPasswordCorrect = await user.comparePassword(password);
   
     if (!isPasswordCorrect) {
-      throw new CustomError.UnauthenticatedError('Invalid Credentials');
+      throw new CustomError.UnauthenticatedError('Wrong Password!');
     }
    /**  if (!user.isVerified) {
       throw new CustomError.UnauthenticatedError('Please verify your email');
@@ -85,7 +85,6 @@ const register = async (req, res) => {
     const user = await User.findOne({ email });
   
     if (user) {
-      // send email
       const origin = 'http://localhost:3000';
       await sendResetPasswordEmail({
         name: user.name,
