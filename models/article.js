@@ -2,10 +2,12 @@ const mongoose = require('mongoose');
 
 const articleSchema = new mongoose.Schema({
   nom: {
-    type: String
+    type: String,
+    required: true
   },
   text:{
-    type: String
+    type: String,
+    required: true
   }
 },
 { timestamps: true });

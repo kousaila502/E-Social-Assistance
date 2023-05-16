@@ -24,7 +24,7 @@ router
 
 router
   .route('/emp/:id')
-  .get(authenticateUser,getSingleChapitre);
+  .get(authenticateUser,getSingleSousChapitre);
 
 router
 .route('/admin/:id')
