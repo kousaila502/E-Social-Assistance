@@ -76,13 +76,13 @@ app.use(errorHandlerMiddleware);
 
 //const mongoSanitize = require('express-mongo-sanitize');
 
-const port = 5000;
+const port = 3000;
 
 const start = async () => {
   try {
     await connectDb(process.env.url);
     app.listen(port, () => {
-      console.log(`th e server is listening on port ${port}...`);
+      console.log(`the server is listening on port ${port}...`);
     });
   } catch (error) {
     console.log(error);

@@ -10,7 +10,7 @@ const sendResetPasswordEmail = require('../utils/sendResetPasswordEmail');
 
 const register = async (req, res) => {
    
-    const { email, name, password } = req.body;
+    const { email, name, password , phoneNumber, type} = req.body;
    
     const emailAlreadyExists = await User.findOne({ email });
     if (emailAlreadyExists) {
@@ -25,7 +25,9 @@ const register = async (req, res) => {
       name,
       email,
       password,
-      role
+      role,
+      phoneNumber,
+      type
     });
     refreshToken = crypto.randomBytes(40).toString('hex');
 
