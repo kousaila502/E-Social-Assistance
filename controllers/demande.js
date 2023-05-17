@@ -51,7 +51,7 @@ const getAllDemande = async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  const result = await Demande.find(queryObject).skip(skip).limit(limit);
+  const result = await Demande.find(queryObject).skip(skip).limit(limit).populate('user');
 
   res.status(StatusCodes.OK).json({ result, count: result.length });
 };
