@@ -29,9 +29,6 @@ const register = async (req, res) => {
       phoneNumber,
       type
     });
-    refreshToken = crypto.randomBytes(40).toString('hex');
-
-    attachCookiesToResponse({ res, user , refreshToken });
   
     res.status(StatusCodes.CREATED).json(user);
   };

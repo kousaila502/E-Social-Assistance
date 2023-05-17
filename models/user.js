@@ -23,7 +23,7 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Please provide type'],
   },
   phoneNumber: {
-    type: Number,
+    type: String,
     required: [true, 'Please provide a phone number'],
     minlength: 10,
   },
