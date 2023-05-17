@@ -44,8 +44,6 @@ const getAllDemande = async (req, res) => {
 
   if(status){
     queryObject.status = status;
-  }else{
-    queryObject.status = "pending";
   }
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
