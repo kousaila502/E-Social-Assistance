@@ -9,7 +9,9 @@ const getAllUsers = async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
   const users = await User.find({ role: 'user' }).select('-password').skip(skip).limit(limit);
-  res.status(StatusCodes.OK).json({ users, count: users.length  });
+  const totalCount = await User.countDocuments({ role: 'user' });
+
+  res.status(StatusCodes.OK).json({ users, count: users.length , totalCount });
 };
 
 const getSingleUser = async (req, res) => {
