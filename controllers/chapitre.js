@@ -19,7 +19,13 @@ const getAllChapitres = async (req, res) => {
 const getSingleChapitre = async (req, res) => {
   const { id: chapitreId } = req.params;
 
-  const chapitre = await Chapitre.findOne({ _id: chapitreId }).populate('sous_chapitre');
+  const chapitre = await Chapitre.findOne({ _id: chapitreId })
+  .populate({
+    path: 'sous_chapitre',
+    populate: {
+      path: 'article'
+    }
+  });
 
   if (!chapitre) {
     throw new CustomError.NotFoundError(`No chapitre with id : ${chapitreId}`);
