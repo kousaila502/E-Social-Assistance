@@ -51,7 +51,7 @@ const getAllDemande = async (req, res) => {
 
   const result = await Demande.find(queryObject).skip(skip).limit(limit).populate('user');
 
-  const totalCount = await Demande.countDocuments();
+  const totalCount = await Demande.countDocuments(queryObject);
   res.status(StatusCodes.OK).json({ result, count: result.length , totalCount });
 };
 const getMyDemandes = async (req, res) => {

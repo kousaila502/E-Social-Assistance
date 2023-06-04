@@ -41,6 +41,20 @@ const updateSousChapitre = async (req, res) => {
   res.status(StatusCodes.OK).json({ sousChapitre });
 };
 
+const updateStatusSousChapitre = async (req, res) => {
+  const { id: souChapitreId } = req.params;
+  const sousChapitre = await SousChapitre.findOneAndUpdate({ _id: souChapitreId }, {status: req.body.status}, {
+    new: true,
+    runValidators: true,
+  });
+
+  if (!sousChapitre) {
+    throw new CustomError.NotFoundError(`No sous chapitre with id : ${souChapitreId}`);
+  }
+
+  res.status(StatusCodes.OK).json({ sousChapitre });
+};
+
 
 
 
@@ -48,5 +62,6 @@ module.exports = {
     createSousChapitre,
     getAllSousChapitres,
     getSingleSousChapitre,
-    updateSousChapitre
+    updateSousChapitre,
+    updateStatusSousChapitre
 };

@@ -9,7 +9,8 @@ const {
   createSousChapitre,
   getAllSousChapitres,
   getSingleSousChapitre,
-  updateSousChapitre
+  updateSousChapitre,
+  updateStatusSousChapitre
 } = require('../controllers/sous_chapitre');
 
 
@@ -29,7 +30,8 @@ router
 router
 .route('/admin/:id')
 .get([authenticateUser, authorizePermissions('admin')], getSingleSousChapitre)
-.patch([authenticateUser, authorizePermissions('admin')], updateSousChapitre);
+.patch([authenticateUser, authorizePermissions('admin')], updateSousChapitre)
+.patch([authenticateUser, authorizePermissions('admin')], updateStatusSousChapitre);
 
 
 module.exports = router;

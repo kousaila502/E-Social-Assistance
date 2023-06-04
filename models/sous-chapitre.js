@@ -15,7 +15,7 @@ const sousChapitreSchema = new mongoose.Schema({
   }],
   status: {
     type: String,
-    enum: ['active', 'deactive'],
+    enum: ['active', 'desactive'],
     default: 'active',
   },
 },
