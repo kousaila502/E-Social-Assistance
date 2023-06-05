@@ -35,6 +35,7 @@ const sousChapitreRouter = require("./routers/sous_chapitre");
 const chapitreRouter = require("./routers/chapitre");
 const budgetRouter = require("./routers/budgetPool");
 const paimentRouter = require("./routers/paiment");
+const notificationRouter = require("./routers/notification");
 
 //Middleware
 const notFoundMiddleware = require("./middleware/not-found");
@@ -60,6 +61,7 @@ app.use("/api/v1/annonce", annonceRouter);
 app.use("/api/v1/article", articleRouter);
 app.use("/api/v1/sousChapitre", sousChapitreRouter);
 app.use("/api/v1/chapitre", chapitreRouter);
+app.use("/api/v1/notification", notificationRouter);
 app.use(
   "/api/v1/budget",
   [authenticateUser, authorizePermissions("admin")],
