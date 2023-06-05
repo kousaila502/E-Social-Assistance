@@ -1,4 +1,5 @@
 const Demande = require('../models/demande');
+const Notification = require('../models/notifiacation');
 
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
@@ -107,6 +108,23 @@ const updateDemande = async (req, res) => {
 
   if (!demande) {
     throw new CustomError.NotFoundError(`No demande with id : ${demandeId}`);
+  }
+
+  if(req.body.status == "accepted"){
+    const notification = await Notification.create(
+      {user: demande.user,
+       demande: demandeId,
+       description: "your demande is accepted"});
+
+    res.status(StatusCodes.OK).json({ demande, notification });
+  }
+  if(req.body.status == "rejected"){
+    const notification = await Notification.create(
+      {user: demande.user,
+       demande: demandeId,
+       description: "your demande is rejected"});
+
+    res.status(StatusCodes.OK).json({ demande, notification });
   }
 
   res.status(StatusCodes.OK).json({ demande });

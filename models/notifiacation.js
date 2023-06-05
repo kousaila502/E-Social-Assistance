@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const User = require('./user');
 const Demande = require('./demande');
 const Annonce = require('./annonce');
-const Pret = require('./pret');
 
 
 const notificationSchema = new mongoose.Schema({
@@ -10,20 +9,16 @@ const notificationSchema = new mongoose.Schema({
     type: String,
   },
   anounce: {
-    type: mongoose.Schema.objectId,
-    ref: Annonce
+    type: mongoose.Types.ObjectId,
+    ref: 'Annonce'
   },
   demande: {
-    type: mongoose.Schema.objectId,
-    ref: Demande
-  },
-  pret: {
-    type: mongoose.Schema.objectId,
-    ref: Pret
+    type: mongoose.Types.ObjectId,
+    ref: 'Demande'
   },
   user: {
-    type: mongoose.Schema.objectId,
-    ref: User
+    type: mongoose.Types.ObjectId,
+    ref: 'User'
   }
 });
 

@@ -1,5 +1,6 @@
 const Annonce = require('../models/annonce');
 const Demande = require('../models/demande');
+const Notification = require('../models/notifiacation');
 const AnnonceEmpInscrits = require('../models/annonceEmpInscrits');
 const AnnonceEmpAdmis = require('../models/annonceEmpAdmis');
 const { StatusCodes } = require('http-status-codes');
@@ -118,16 +119,22 @@ const admisAnnonce = async (req, res) => {
 
     const annonce = await AnnonceEmpAdmis.create({ annonce: idAnnonce, empAdmis: idEmpAdmis });
 
-    await Demande.create({
-        description: `Winning in anounce : ${idAnnonce}`,
-        status: 'accepted',
-        user: idEmpAdmis
-    });
     if (!annonce) {
         throw new CustomError.NotFoundError(`No annonce with id : ${req.params.id}`);
     }
 
-    res.status(StatusCodes.OK).json({ annonce });
+    const demande = await Demande.create({
+        description: `Winning in anounce : ${idAnnonce}`,
+        status: 'accepted',
+        user: idEmpAdmis
+    });
+    const notification = await Notification.create({
+        description: `Winning in anounce : ${idAnnonce}`,
+        user: idEmpAdmis,
+        anounce: idAnnonce
+    })
+    
+    res.status(StatusCodes.OK).json({ annonce, notification, demande });
 };
 
 const getAllEmpAdmis = async (req, res) => {
