@@ -100,8 +100,10 @@ const updateMyDemande = async (req, res) => {
 };
 const updateDemande = async (req, res) => {
   const { id: demandeId } = req.params;
+  const status = req.body.status;
+  const motif = req.body.motif
 
-  const demande = await Demande.findOneAndUpdate({ _id: demandeId }, { status: req.body.status }, {
+  const demande = await Demande.findOneAndUpdate({ _id: demandeId }, { status , motif}, {
     new: true,
     runValidators: true,
   });

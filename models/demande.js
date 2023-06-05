@@ -23,6 +23,9 @@ const demandeSchema = new mongoose.Schema({
   paiment: {
     type: mongoose.Types.ObjectId,
     ref: 'Paiment'
+  },
+  motif: {
+    type: String
   }
 },
 { timestamps: true });
