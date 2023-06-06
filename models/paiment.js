@@ -8,18 +8,13 @@ const paimentSchema = new mongoose.Schema(
     nPiece: {
       type: Number,
     },
-    date: Date,
+    montant: {
+      type: String,
+      required: true
+    },
     source: {
-      type: {
-        type: String,
-        enum: ['User', 'BudgetPool'],
-        required: true,
-      },
-      id: {
-        type: mongoose.Types.ObjectId,
-        required: true,
-        refPath: 'source.type',
-      },
+      type: mongoose.Types.ObjectId,
+      ref: 'BudgetPool'
     },
     destination: {
       type: {
@@ -37,6 +32,9 @@ const paimentSchema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: 'Demande',
     },
+    files: [{
+      type: String
+    }],
   },
   { timestamps: true }
 );

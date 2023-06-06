@@ -18,6 +18,10 @@ const chapitreSchema = new mongoose.Schema({
     enum: ['active', 'desactive'],
     default: 'active',
   },
+  budgetPool: {
+    type: mongoose.Types.ObjectId,
+    ref: 'BudgetPool'
+  }
 },
 { timestamps: true });
 

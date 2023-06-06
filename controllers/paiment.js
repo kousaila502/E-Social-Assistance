@@ -1,43 +1,76 @@
 const Budget = require('../models/budgetPool');
 const Paiment = require('../models/paiment');
 const Demande = require('../models/demande');
+const Chapitre = require('../models/chapitre');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
 
+const multer = require('multer');
+const chapitre = require('../models/chapitre');
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb)=>{
+    cb(null, './uploads/')
+  },
+  filename: (req, file, cb)=>{
+    cb(null, Date.now() + path.extname(file.originalname))
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1 * 1024 * 1024 },
+  fileFilter: (req, file, callback) => {
+    const acceptableExtensions = ['pdf']
+    if (!(acceptableExtensions.some(extension => 
+        path.extname(file.originalname).toLowerCase() === `.${extension}`)
+    )) {
+        return callback(new CustomError.BadRequestError(`Extension not allowed, accepted extensions are ${acceptableExtensions.join(',')}`))
+    }
+    callback(null, true)
+  }
+});
+
 const createDemandeTrans = async (req, res) => {
     const { id: demandeId } = req.params;
-    const { mode, nPiece, budgetPool } = req.body;
-  
+    const { montant, fieldId } = req.body;
+    const files = req.file.path; 
+    
+    /*const chapitre = await Chapitre.findById(fieldId);
+    let budgetPool = "";
+    if(!chapitre){
+      
+    }else{
+      const budgetPool = chapitre.budgetPool;
+    }*/
+    const budgetPool = "645e5f1aecbc3c7a336f017a";
+
     const demande = await Demande.findById(demandeId);
     if (!demande) {
       throw new CustomError.NotFoundError(`No demande with id : ${demandeId}`);
     }
-    
     const existingBudget = await Budget.findById(budgetPool);
 
     if (!existingBudget) {
         throw new CustomError.NotFoundError(`No budget pool with id : ${budgetPool}`);
     }
 
-    if(demande.montant<=existingBudget.remaining){
-        await Budget.findOneAndUpdate({ _id: budgetPool }, { $inc: { remaining: -demande.montant } }, {
+    if(montant<=existingBudget.remaining){
+        await Budget.findOneAndUpdate({ _id: budgetPool }, { $inc: { remaining: -montant } }, {
         new: true,
         runValidators: true,
         });
 
         const trans = await Paiment.create({
-            mode,
-            nPiece,
             destination: {
               type: 'User',
               id: demande.user,
             },
-            source: {
-              type: 'BudgetPool',
-              id: budgetPool,
-            },
+            montant: montant,
+            source: budgetPool,
             demande: demandeId,
+            files: files
           });
 
           res.status(StatusCodes.CREATED).json({ trans });
@@ -128,5 +161,6 @@ module.exports = {
     updateTrans,
     createDemandeTrans,
     createEnterPoolTrans,
-    getSingleTrans
+    getSingleTrans,
+    upload
 };
