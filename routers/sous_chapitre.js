@@ -30,8 +30,10 @@ router
 router
 .route('/admin/:id')
 .get([authenticateUser, authorizePermissions('admin')], getSingleSousChapitre)
-.patch([authenticateUser, authorizePermissions('admin')], updateSousChapitre)
-.patch([authenticateUser, authorizePermissions('admin')], updateStatusSousChapitre);
+.patch([authenticateUser, authorizePermissions('admin')], updateSousChapitre);
 
+router
+.route('/admin/statusUpdate/:id')
+.patch([authenticateUser, authorizePermissions('admin')], updateStatusSousChapitre);
 
 module.exports = router;
