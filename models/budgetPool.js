@@ -16,6 +16,18 @@ const budgetPoolSchema = new mongoose.Schema({
     default: function () {
       return this.montant;
     },
+  field: {
+    type: {
+      type: String,
+      enum: ['Chapitre', 'Annonce'],
+      required: true,
+    },
+    id: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      refPath: 'field.type',
+    },
+  }
   },
 });
 

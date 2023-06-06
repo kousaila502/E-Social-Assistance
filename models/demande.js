@@ -4,6 +4,18 @@ const demandeSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  field:{
+    type: {
+      type: String,
+      enum: ['Chapitre', 'Annonce'],
+      required: true,
+    },
+    id: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+      refPath: 'field.type',
+    }
+  },
   montant: {
     type: Number 
   },

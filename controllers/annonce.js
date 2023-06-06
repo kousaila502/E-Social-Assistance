@@ -126,7 +126,8 @@ const admisAnnonce = async (req, res) => {
     const demande = await Demande.create({
         description: `Winning in anounce : ${idAnnonce}`,
         status: 'accepted',
-        user: idEmpAdmis
+        user: idEmpAdmis,
+        field: {type: 'Annonce', id: idAnnonce}
     });
     const notification = await Notification.create({
         description: `Winning in anounce : ${idAnnonce}`,

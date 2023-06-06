@@ -6,7 +6,8 @@ const {
 
 const {
     getAllNotification,
-    getSingleNotification
+    getSingleNotification,
+    updateNotificationStatus
 } = require('../controllers/notification');
 
 
@@ -16,7 +17,8 @@ router
 
 router
   .route('/emp/:id')
-  .get(authenticateUser,getSingleNotification);
+  .get(authenticateUser,getSingleNotification)
+  .patch(authenticateUser,updateNotificationStatus);;
 
 
 

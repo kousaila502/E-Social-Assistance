@@ -28,10 +28,24 @@ const getSingleNotification = async (req, res) => {
   res.status(StatusCodes.OK).json({ notification });
 };
 
-
+const updateNotificationStatus = async (req, res) => {
+    const { id: notificationId } = req.params;
+  
+    const notification = await Notification.findOneAndUpdate({ _id: notificationId }, {seen: true} , {
+      new: true,
+      runValidators: true,
+    });
+  
+    if (!notification) {
+      throw new CustomError.NotFoundError(`No notification with id : ${notificationId}`);
+    }
+  
+    res.status(StatusCodes.OK).json({ notification });
+  };
 
 
 module.exports = {
     getAllNotification,
-    getSingleNotification
+    getSingleNotification,
+    updateNotificationStatus
 };
