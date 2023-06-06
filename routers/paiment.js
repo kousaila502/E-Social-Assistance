@@ -14,7 +14,7 @@ const {
 
 router.route('/getTrans').get(getTrans);
 router.route('/getSingleTrans/:id').get(getSingleTrans);
-router.route('/createDemandeTrans/:id').post(upload.single('doc'),createDemandeTrans);
+router.route('/createDemandeTrans/:id').post(createDemandeTrans);
 router.route('/createEnterPoolTrans').post(createEnterPoolTrans);
 router.route('/updateTrans/:id').patch(updateTrans);
 

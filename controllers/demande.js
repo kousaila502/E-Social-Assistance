@@ -34,7 +34,11 @@ const upload = multer({
 
 const createDemande = async (req, res) => {
   const { description } = req.body;
-  const files = req.file.path;
+  console.log(req.file);
+  let files = "";
+    if(req.file){
+       files = req.file.path; 
+    }
   const data = {};
 
   data.user = req.user.userId;
@@ -64,7 +68,7 @@ const getAllDemande = async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  const result = await Demande.find(queryObject).skip(skip).limit(limit).populate('user');
+  const result = await Demande.find(queryObject).skip(skip).limit(limit).populate('user').sort('-createdAt');
 
   const totalCount = await Demande.countDocuments(queryObject);
   res.status(StatusCodes.OK).json({ result, count: result.length , totalCount });

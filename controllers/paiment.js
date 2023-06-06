@@ -34,11 +34,11 @@ const upload = multer({
 
 const createDemandeTrans = async (req, res) => {
     const { id: demandeId } = req.params;
-    const { montant, fieldId } = req.body;
-    let files = "";
+    const { montant, fieldId , doc} = req.body;
+    /*let files = "";
     if(req.file){
        files = req.file.path; 
-    }
+    }*/
     
     /*const chapitre = await Chapitre.findById(fieldId);
     let budgetPool = "";
@@ -73,7 +73,7 @@ const createDemandeTrans = async (req, res) => {
             montant: montant,
             source: budgetPool,
             demande: demandeId,
-            files: files
+            files: doc
           });
 
           res.status(StatusCodes.CREATED).json({ trans });

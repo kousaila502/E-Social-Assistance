@@ -24,7 +24,7 @@ const getAllAnnonce = async (req, res) => {
     const limit = Number(req.query.limit) || 10;
     const skip = (page - 1) * limit;
   
-    const result = await Annonce.find(queryObject).skip(skip).limit(limit);
+    const result = await Annonce.find(queryObject).skip(skip).limit(limit).sort('-createdAt');
   
     const totalCount = await Annonce.countDocuments(queryObject);
     res.status(StatusCodes.OK).json({ result, count: result.length , totalCount });
