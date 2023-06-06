@@ -35,7 +35,10 @@ const upload = multer({
 const createDemandeTrans = async (req, res) => {
     const { id: demandeId } = req.params;
     const { montant, fieldId } = req.body;
-    const files = req.file.path; 
+    let files = "";
+    if(req.file){
+       files = req.file.path; 
+    }
     
     /*const chapitre = await Chapitre.findById(fieldId);
     let budgetPool = "";
