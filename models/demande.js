@@ -21,7 +21,7 @@ const demandeSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'rejected', 'accepted', 'paied'],
+    enum: ['pending', 'rejected', 'accepted', 'paid'],
     default: 'pending',
   },
   files: [{
