@@ -79,17 +79,25 @@ const getMySingleDemande = async (req, res) => {
 };
 const updateMyDemande = async (req, res) => {
   const { id: demandeId } = req.params;
-  
-  const demande = await Demande.findOneAndUpdate({ _id: demandeId, user: req.user.userId }, req.body, {
-    new: true,
-    runValidators: true,
-  });
+
+  const demande = await Demande.findOne({ _id: demandeId, user: req.user.userId });
 
   if (!demande) {
-    throw new CustomError.NotFoundError(`No demande with id : ${demandeId}`);
+    throw new CustomError.NotFoundError(`No demande with id: ${demandeId}`);
   }
 
-  res.status(StatusCodes.OK).json({ demande });
+  if (demande.status !== 'pending') {
+    res.status(StatusCodes.BAD_REQUEST).json({ error: 'Cannot update a demande that is not in pending status' });
+    return;
+  }
+
+  const updatedDemande = await Demande.findOneAndUpdate(
+    { _id: demandeId, user: req.user.userId },
+    req.body,
+    { new: true, runValidators: true }
+  );
+
+  res.status(StatusCodes.OK).json({ demande: updatedDemande });
 };
 const updateDemande = async (req, res) => {
   const { id: demandeId } = req.params;

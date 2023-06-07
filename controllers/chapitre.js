@@ -4,8 +4,20 @@ const CustomError = require('../errors');
 const path = require('path');
 
 const createChapitre = async (req, res) => {
-  const chapitre = await Chapitre.create(req.body);
+  const {montant, nom, text} = req.body;
+  const existingBudget = await Budget.findOne({_id: "645e5dfdecbc3c7a336f0177"})
+  if(montant<=existingBudget.remaining){
+  const budget = await Budget.create({montant, description: text});
+  await Budget.findOneAndUpdate({ _id: "645e5dfdecbc3c7a336f0177" }, { $inc: { remaining: -montant } }, {
+    new: true,
+    runValidators: true,
+  });
+  const chapitre = (await Chapitre.create({nom, description, budgetPool: budget._id})).populate('budgetPool');
+
   res.status(StatusCodes.CREATED).json({ chapitre });
+  }else{
+    throw new CustomError.BadRequestError(`Budget insuffisant...`);
+}
 };
 const getAllChapitres = async (req, res) => {
   const page = Number(req.query.page) || 1;
