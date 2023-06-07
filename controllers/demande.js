@@ -33,15 +33,8 @@ const upload = multer({
 });
 
 const createDemande = async (req, res) => {
-  const { description, chapitreId, requestMontant } = req.body;
 
-  let files = "";
-    if(req.file){
-       files = req.file.path; 
-    }
-  const data = {};
-
-  data.user = req.user.userId;
+  req.bodyser = req.user.userId;
   const field = {type: 'Chapitre', id: chapitreId};
   data.field = field
 
