@@ -16,7 +16,10 @@ const demandeSchema = new mongoose.Schema({
       refPath: 'field.type',
     }
   },
-  montant: {
+  requestMontant: {
+    type: Number 
+  },
+  acceptedMontant: {
     type: Number 
   },
   status: {

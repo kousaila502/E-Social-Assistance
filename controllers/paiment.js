@@ -49,7 +49,10 @@ const createDemandeTrans = async (req, res) => {
     }*/
     const budgetPool = "645e5f1aecbc3c7a336f017a";
 
-    const demande = await Demande.findById(demandeId);
+     const demande = await Demande.findOneAndUpdate({ _id: demandeId }, { status: "paid"}, {
+    new: true,
+    runValidators: true,
+  });
     if (!demande) {
       throw new CustomError.NotFoundError(`No demande with id : ${demandeId}`);
     }

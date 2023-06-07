@@ -7,6 +7,15 @@ const createBudget = async (req, res) => {
   const budget = await Budget.create(req.body);
   res.status(StatusCodes.CREATED).json({ budget });
 };
+
+const updateBudget = async (req, res) => {
+  const { id: budgetId } = req.params;
+  const budget = await Budget.findOneAndUpdate({ _id: budgetId }, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(StatusCodes.CREATED).json({ budget });
+};
 const getBudget = async (req, res) => {
   const budget = await Budget.find({});
 
@@ -63,5 +72,6 @@ module.exports = {
     pushBudget,
     popBudget,
     createBudget,
-    getSingleBudget
+    getSingleBudget,
+    updateBudget
 };

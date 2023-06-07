@@ -7,7 +7,8 @@ const {
   pushBudget,
   popBudget,
   createBudget,
-  getSingleBudget
+  getSingleBudget,
+  updateBudget
 } = require('../controllers/budgetPool');
 
 
@@ -16,6 +17,8 @@ router.route('/getSingleBudget/:id').get(getSingleBudget)
 router.route('/createBudget').post(createBudget)
 router.route('/pushBudget/:id').patch(pushBudget)
 router.route('/popBudget/:id').patch(popBudget);
+router.route('/updateBudget/:id').patch(updateBudget);
+
 
 
 

@@ -12,7 +12,7 @@ const getAllChapitres = async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
 
-  const result = await Chapitre.find({}).skip(skip).limit(limit);
+  const result = await Chapitre.find({}).skip(skip).limit(limit).populate('budgetPool');
 
   res.status(StatusCodes.OK).json({ result, count: result.length });
 };

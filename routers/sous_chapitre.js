@@ -33,7 +33,7 @@ router
 .patch([authenticateUser, authorizePermissions('admin')], updateSousChapitre);
 
 router
-.route('/admin/statusUpdate/:id')
+.route('/admin/statusUpdate')
 .patch([authenticateUser, authorizePermissions('admin')], updateStatusSousChapitre);
 
 module.exports = router;
