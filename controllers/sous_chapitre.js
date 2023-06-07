@@ -38,7 +38,7 @@ const updateSousChapitre = async (req, res) => {
     throw new CustomError.NotFoundError(`No sous chapitre with id : ${souChapitreId}`);
   }
 
-  res.status(StatusCodes.OK).json({ sousChapitre });
+  res.status(StatusCodes.OK).json({ msg: 'ok' });
 };
 
 const updateStatusSousChapitre = async (req, res) => {
@@ -46,15 +46,15 @@ const updateStatusSousChapitre = async (req, res) => {
 
   const updatedSousChapitres = await Promise.all(
     updates.map(async (update) => {
-      const { id, status } = update;
-      const sousChapitre = await SousChapitre.findOneAndUpdate(
-        { _id: id },
-        { status },
+      const { _id, status } = update;
+      const sousChapitre = await SousChapitre.findByIdAndUpdate(
+        _id,
+        { $set: { status } },
         { new: true, runValidators: true }
       );
 
       if (!sousChapitre) {
-        throw new CustomError.NotFoundError(`No sous chapitre with id: ${id}`);
+        throw new CustomError.NotFoundError(`No sous chapitre with id: ${_id}`);
       }
 
       return sousChapitre;
@@ -63,6 +63,7 @@ const updateStatusSousChapitre = async (req, res) => {
 
   res.status(StatusCodes.OK).json({ sousChapitres: updatedSousChapitres });
 };
+
 
 
 

@@ -34,7 +34,7 @@ const upload = multer({
 
 const createDemande = async (req, res) => {
 
-  req.bodyser = req.user.userId;
+  req.body.user = req.user.userId;
   const field = {type: 'Chapitre', id: chapitreId};
   data.field = field
 
