@@ -34,56 +34,54 @@ const upload = multer({
 
 const createDemandeTrans = async (req, res) => {
     const { id: demandeId } = req.params;
-    const { montant, fieldId , doc} = req.body;
-    /*let files = "";
-    if(req.file){
-       files = req.file.path; 
-    }*/
-    
-    /*const chapitre = await Chapitre.findById(fieldId);
-    let budgetPool = "";
-    if(!chapitre){
-      
-    }else{
-      const budgetPool = chapitre.budgetPool;
-    }*/
-    const budgetPool = "645e5f1aecbc3c7a336f017a";
-
-     const demande = await Demande.findOneAndUpdate({ _id: demandeId }, { status: "paid"}, {
+    const { acceptedMontant, doc} = req.body;
+   
+    const demande = await Demande.findOneAndUpdate({ _id: demandeId }, { status: "paid"}, {
     new: true,
     runValidators: true,
-  });
+    });
+
     if (!demande) {
       throw new CustomError.NotFoundError(`No demande with id : ${demandeId}`);
     }
+
+    const fieldType = demande.field.type;
+    const fieldId = demande.field.id;
+
+    let budgetPool = "6480875f7ba8b579a808745f";
+
+    if(fieldType == "Chapitre"){
+      const chapitre = await Chapitre.findById(fieldId);
+      budgetPool = chapitre.budgetPool;
+    }
+
     const existingBudget = await Budget.findById(budgetPool);
 
-    if (!existingBudget) {
-        throw new CustomError.NotFoundError(`No budget pool with id : ${budgetPool}`);
-    }
+      if (!existingBudget) {
+          throw new CustomError.NotFoundError(`No budget pool with id : ${budgetPool}`);
+      }
 
-    if(montant<=existingBudget.remaining){
-        await Budget.findOneAndUpdate({ _id: budgetPool }, { $inc: { remaining: -montant } }, {
-        new: true,
-        runValidators: true,
-        });
-
-        const trans = await Paiment.create({
-            destination: {
-              type: 'User',
-              id: demande.user,
-            },
-            montant: montant,
-            source: budgetPool,
-            demande: demandeId,
-            files: doc
+      if(acceptedMontant<=existingBudget.remaining){
+          await Budget.findOneAndUpdate({ _id: budgetPool }, { $inc: { remaining: -acceptedMontant } }, {
+          new: true,
+          runValidators: true,
           });
 
-          res.status(StatusCodes.CREATED).json({ trans });
-    }else{
-        throw new CustomError.BadRequestError(`Budget insuffisant...`);
-    }
+          const trans = await Paiment.create({
+              destination: {
+                type: 'User',
+                id: demande.user,
+              },
+              acceptedMontant,
+              source: budgetPool,
+              demande: demandeId,
+              files: doc
+            });
 
+            res.status(StatusCodes.CREATED).json({ trans });
+      }else{
+          throw new CustomError.BadRequestError(`Budget insuffisant...`);
+      }
 };
 
 const createEnterPoolTrans = async (req, res) => {

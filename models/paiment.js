@@ -2,13 +2,7 @@ const mongoose = require('mongoose');
 
 const paimentSchema = new mongoose.Schema(
   {
-    mode: {
-      type: String,
-    },
-    nPiece: {
-      type: Number,
-    },
-    montant: {
+    acceptedMontant: {
       type: String,
       required: true
     },
