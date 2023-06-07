@@ -1,4 +1,5 @@
 const Chapitre = require('../models/chapitre');
+const Budget = require('../models/budgetPool');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
@@ -12,7 +13,7 @@ const createChapitre = async (req, res) => {
     new: true,
     runValidators: true,
   });
-  const chapitre = (await Chapitre.create({nom, description, budgetPool: budget._id})).populate('budgetPool');
+  const chapitre = await Chapitre.create({nom, text, budgetPool: budget._id});
 
   res.status(StatusCodes.CREATED).json({ chapitre });
   }else{
