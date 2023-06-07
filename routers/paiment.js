@@ -7,8 +7,7 @@ const {
   updateTrans,
   createDemandeTrans,
   createEnterPoolTrans,
-  getSingleTrans,
-  upload
+  getSingleTrans
 } = require('../controllers/paiment');
 
 

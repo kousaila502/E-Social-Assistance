@@ -4,41 +4,17 @@ const Notification = require('../models/notifiacation');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
-const multer = require('multer')
 
 const { checkPermissions } = require('../utils/checkPermissions');
 
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb)=>{
-    cb(null, './uploads/')
-  },
-  filename: (req, file, cb)=>{
-    cb(null, Date.now() + path.extname(file.originalname))
-  }
-});
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1 * 1024 * 1024 },
-  fileFilter: (req, file, callback) => {
-    const acceptableExtensions = ['pdf']
-    if (!(acceptableExtensions.some(extension => 
-        path.extname(file.originalname).toLowerCase() === `.${extension}`)
-    )) {
-        return callback(new CustomError.BadRequestError(`Extension not allowed, accepted extensions are ${acceptableExtensions.join(',')}`))
-    }
-    callback(null, true)
-  }
-});
-
 const createDemande = async (req, res) => {
-  const { description, chapitreId, requestMontant , doc} = req.body;
+  const { description, sousChapitreId, requestMontant , doc} = req.body;
 
   const data = {};
 
   data.user = req.user.userId;
-  const field = {type: 'Chapitre', id: chapitreId};
+  const field = {type: 'Sous_chapitre', id: sousChapitreId};
   data.field = field
 
   if(requestMontant){
@@ -159,6 +135,5 @@ module.exports = {
   getSingleDemande,
   getMySingleDemande,
   updateDemande,
-  updateMyDemande,
-  upload
+  updateMyDemande
 };

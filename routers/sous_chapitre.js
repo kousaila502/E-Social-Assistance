@@ -30,7 +30,7 @@ router
 router
 .route('/admin/:id')
 .get([authenticateUser, authorizePermissions('admin')], getSingleSousChapitre)
-/*.patch([authenticateUser, authorizePermissions('admin')], updateSousChapitre);*/
+.patch([authenticateUser, authorizePermissions('admin')], updateSousChapitre);
 
 router
 .route('/admin/statusUpdate')

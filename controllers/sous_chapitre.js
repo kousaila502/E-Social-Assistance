@@ -38,7 +38,7 @@ const updateSousChapitre = async (req, res) => {
     throw new CustomError.NotFoundError(`No sous chapitre with id : ${souChapitreId}`);
   }
 
-  res.status(StatusCodes.OK).json({ msg: 'ok' });
+  res.status(StatusCodes.OK).json({ sousChapitre });
 };
 
 const updateStatusSousChapitre = async (req, res) => {

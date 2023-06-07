@@ -15,14 +15,13 @@ const {
   getSingleDemande,
   getMySingleDemande,
   updateDemande,
-  updateMyDemande,
-  upload
+  updateMyDemande
 } = require('../controllers/demande');
 
 
 router
   .route('/emp')
-  .post(authenticateUser, upload.single('doc'), createDemande)
+  .post(authenticateUser, createDemande)
   .get(authenticateUser,getMyDemandes);
 
 router

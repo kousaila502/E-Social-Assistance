@@ -7,7 +7,7 @@ const demandeSchema = new mongoose.Schema({
   field:{
     type: {
       type: String,
-      enum: ['Chapitre', 'Annonce'],
+      enum: ['Sous_chapitre', 'Annonce'],
       required: true,
     },
     id: {

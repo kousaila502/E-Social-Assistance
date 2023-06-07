@@ -8,6 +8,10 @@ const articleSchema = new mongoose.Schema({
   text:{
     type: String,
     required: true
+  },
+  sous_chapitre: {
+    type: mongoose.Types.ObjectId,
+    ref: 'SousChapitre'
   }
 },
 { timestamps: true });

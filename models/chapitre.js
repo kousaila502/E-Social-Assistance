@@ -9,10 +9,6 @@ const chapitreSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  sous_chapitre: [{
-    type: mongoose.Types.ObjectId,
-    ref: 'SousChapitre'
-  }],
   status: {
     type: String,
     enum: ['active', 'desactive'],
