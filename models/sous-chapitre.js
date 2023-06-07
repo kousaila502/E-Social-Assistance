@@ -9,6 +9,10 @@ const sousChapitreSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  article: [{
+    type: mongoose.Types.ObjectId,
+    ref: 'Article'
+  }],
   chapitre: {
     type: mongoose.Types.ObjectId,
     ref: 'Chapitre'

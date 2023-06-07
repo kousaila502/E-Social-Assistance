@@ -1,10 +1,22 @@
 const SousChapitre = require('../models/sous-chapitre');
+const Chapitre = require('../models/chapitre');
 const { StatusCodes } = require('http-status-codes');
 const CustomError = require('../errors');
 const path = require('path');
 
 const createSousChapitre = async (req, res) => {
-  const sousChapitre = await SousChapitre.create(req.body);
+  const {nom, text, chapitreId} = req.body
+  const sousChapitre = await SousChapitre.create({nom, text, chapitre: chapitreId});
+
+  const chapitre = await Chapitre.findOneAndUpdate(
+    { _id: chapitreId },
+    { $push: { sous_chapitre: sousChapitre._id } },
+    { new: true }
+  );
+
+  if (!chapitre) {
+    throw new CustomError.NotFoundError(`No chapitre with id: ${chapitreId}`);
+  }
   res.status(StatusCodes.CREATED).json({ sousChapitre });
 };
 const getAllSousChapitres = async (req, res) => {
