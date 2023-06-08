@@ -118,6 +118,7 @@ const admisAnnonce = async (req, res) => {
     const idAnnonce = req.params.id;
 
     const annonce = await AnnonceEmpAdmis.create({ annonce: idAnnonce, empAdmis: idEmpAdmis });
+    await AnnonceEmpInscrits.findOneAndDelete({ annonce: idAnnonce , emplInscrits: idEmpAdmis });
 
     if (!annonce) {
         throw new CustomError.NotFoundError(`No annonce with id : ${req.params.id}`);
