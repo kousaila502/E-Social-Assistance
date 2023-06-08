@@ -35,12 +35,15 @@ const getSingleAnnonce = async (req, res) => {
     const { id: annonceId } = req.params;
   
     const annonce = await Annonce.findOne({ _id: annonceId });
+
+    const empInscrits = await AnnonceEmpInscrits.find({ annonce: annonceId  }).populate('emplInscrits');
+    const emplAdmis = await AnnonceEmpAdmis.find({ annonce: annonceId }).populate('empAdmis');
   
     if (!annonce) {
       throw new CustomError.NotFoundError(`No annonce with id : ${annonceId}`);
     }
   
-    res.status(StatusCodes.OK).json({ annonce });
+    res.status(StatusCodes.OK).json({ annonce, empInscrits, emplAdmis });
   };
 
 
