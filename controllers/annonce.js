@@ -114,30 +114,44 @@ const getAllEmpInscrit = async (req, res) => {
 };
 
 const admisAnnonce = async (req, res) => {
-    const idEmpAdmis = req.body.idEmpAdmis;
+    const admisArray = req.body; 
     const idAnnonce = req.params.id;
-
-    const annonce = await AnnonceEmpAdmis.create({ annonce: idAnnonce, empAdmis: idEmpAdmis });
-    await AnnonceEmpInscrits.findOneAndDelete({ annonce: idAnnonce , emplInscrits: idEmpAdmis });
-
-    if (!annonce) {
-        throw new CustomError.NotFoundError(`No annonce with id : ${req.params.id}`);
-    }
-
-    const demande = await Demande.create({
-        description: `Winning in anounce : ${idAnnonce}`,
+  
+    const annonces = [];
+    const notifications = [];
+    const demandes = [];
+  
+    for (const admis of admisArray) {
+      const { idEmpAdmis } = admis;
+  
+      const annonce = await AnnonceEmpAdmis.create({ annonce: idAnnonce, empAdmis: idEmpAdmis });
+      await AnnonceEmpInscrits.findOneAndDelete({ annonce: idAnnonce, emplInscrits: idEmpAdmis });
+  
+      if (!annonce) {
+        throw new CustomError.NotFoundError(`No annonce with id: ${req.params.id}`);
+      }
+  
+      const demande = await Demande.create({
+        description: `Winning in annonce: ${idAnnonce}`,
         status: 'accepted',
         user: idEmpAdmis,
-        field: {type: 'Annonce', id: idAnnonce}
-    });
-    const notification = await Notification.create({
-        description: `Winning in anounce : ${idAnnonce}`,
+        field: { type: 'Annonce', id: idAnnonce }
+      });
+  
+      const notification = await Notification.create({
+        description: `Winning in annonce: ${idAnnonce}`,
         user: idEmpAdmis,
         anounce: idAnnonce
-    })
-    
-    res.status(StatusCodes.OK).json({ annonce, notification, demande });
-};
+      });
+  
+      annonces.push(annonce);
+      notifications.push(notification);
+      demandes.push(demande);
+    }
+  
+    res.status(StatusCodes.OK).json({ annonces, notifications, demandes });
+  };
+  
 
 const getAllEmpAdmis = async (req, res) => {
     const annonceId = req.params.id;
