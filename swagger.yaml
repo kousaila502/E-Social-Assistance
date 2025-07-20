@@ -1,833 +1,101 @@
 openapi: 3.0.0
 info:
-  version: "1.0.0"
-  title: "Gestion d'oeuvre sociale"
-  description: "API documentation"
+  title: Social Assistance Management API
+  description: |
+    Enterprise-grade backend for social assistance management system.
+    
+    ## Features
+    - User authentication with email verification
+    - Request management workflow
+    - Budget pool allocation and tracking
+    - Payment processing
+    - Notification system
+    - Content and announcement management
+    - Role-based access control
+    
+    ## Authentication
+    This API uses JWT Bearer tokens. Include the token in the Authorization header:
+    `Authorization: Bearer <your-jwt-token>`
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@socialassistance.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
 servers:
-  - url: "http://localhost:3000/api/v1"
-    variables: {}
-schemes:
-  - "http"
-consumes:
-  - "application/json"
-produces:
-  - "application/json"
-paths:
-  /auth/register:
-    post:
-      tags:
-        - "Authentication"
-      summary: "Registers a new user"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "User object"
-          required: true
-          schema:
-            $ref: "#/definitions/User"
-          
-      responses:
-        201:
-          description: "User registered successfully"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequestError"
-  /auth/login:
-    post:
-      tags:
-        - "Authentication"
-      summary: "Logs in a user"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "User credentials"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              email:
-                type: "string"
-                format: "email"
-                required: true
-                example: "johndoe@example.com"
-              password:
-                type: "string"
-                required: true
-                example: "password123"
-      responses:
-        200:
-          description: "User logged in successfully"
-          schema:
-            type: "object"
-            properties:
-              user:
-                type: "object"
-                properties:
-                  _id:
-                    type: "string"
-                    example: "613f7b11a24bb031683a1c2f"
-                  name:
-                    type: "string"
-                    example: "John Doe"
-                  email:
-                    type: "string"
-                    example: "johndoe@example.com"
-                  role:
-                    type: "string"
-                    enum:
-                      - "admin"
-                      - "user"
-                    example: "user"
-              accessToken:
-                type: "string"
-                example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-              refreshToken:
-                type: "string"
-                example: "c431d12c7cbe68e1988a7eb6dbf2076e5d6a5b6f"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequest"
-        401:
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-  /auth/logout:
-    delete:
-      tags:
-        - "Authentication"
-
-  /users/:
-    get:
-      tags:
-        - "Users"
-      summary: "Get all users"
-      description: "Get all users with role 'user'"
-      responses:
-        "201":
-          description: "All user"
-          schema:
-            $ref: "#/definitions/User"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-
-  /users/deleteUsers:
-    delete:
-      tags:
-        - "Users"
-      summary: "Delete all users"
-      description: "Delete all users with role 'user'"
-      responses:
-        "201":
-          description: "all users are deleted.."
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-  /users/showMe:
-    get:
-      tags:
-        - "Users"
-      summary: "Get current user"
-      description: "Get information about the currently authenticated user"
-      responses:
-        "201":
-          description: "The currently authenticated user"
-          schema:
-            $ref: "#/definitions/User"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-  /users/updateUser:
-    patch:
-      tags:
-        - "Users"
-      summary: "Update current user"
-      description: "Update the email and name of the currently authenticated user"
-      parameters:
-       - in: "body"
-         name: "body"
-         description: "User credentials"
-         required: true
-         schema:
-           type: "object"
-           properties:
-             email:
-               type: "string"
-               format: "email"
-               example: "johndoe@example.com"
-             name:
-               type: "string"
-               example: "johndoe"
-      responses:
-        200:
-          description: "User updated"
-          schema:
-            $ref: "#/definitions/User"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequest"
-  /users/updateUserPassword:
-    patch:
-      tags:
-        - "Users"
-      summary: "Update user password"
-      description: "Update the password of the currently authenticated user"
-      parameters:
-        - name: "Update Password Request Body"
-          in: "body"
-          description: "JSON object containing oldPassword and newPassword fields"
-          required: true
-          schema:
-            oldPassword:
-                type: "string"
-                example: "oldPassword"
-                required: true
-            newPassword:
-                type: "string"
-                example: "newPassword"
-                required: true
-      responses:
-        200:
-          description: "Successful operation"
-        400:
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequest"
-  /users/{id}:
-    get:
-      tags:
-        - "Users"
-      summary: "Get user by ID"
-      description: "Get information about a specific user"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the user"
-          required: true
-          type: "string"
-      responses:
-        200:
-          description: "User requested"
-          schema:
-            $ref: "#/definitions/User"
-  /users/deleteSingleUser/{id}:
-    delete:
-      tags:
-        - "Users"
-      summary: "Delete user by ID"
-      description: "Delete a specific user by ID"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the user"
-          required: true
-          type: "string"
-      responses:
-        200:
-          description: "Deleted user"
-        
-  /demande/emp:
-    post:
-      tags:
-      - "Demandes"
-      summary: "Create a new demande"
-      description: "Creates a new demande for the authenticated user."
-      parameters:
-        - name: "body"
-          in: "body"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              description:
-                type: "string"
-                example: "demande of a birthday prime.."
-              montant:
-                type: "number"
-                example: "500000"
-              files:
-                type: "string"
-                example: "doc.pdf"
-      responses:
-        "201":
-          description: "The created demande"
-          schema:
-            $ref: "#/definitions/Demande"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "400":
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequest"
-    get:
-      tags:
-      - "Demandes"
-      summary: "Get my demandes"
-      description: "Gets all the demandes created by the authenticated user."
-      responses:
-        "200":
-          description: "The list of demandes created by the authenticated user."
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Demande"
-        "401":
-            description: "Unauthorized"
-            schema:
-              $ref: "#/components/schemas/Unauthenticated"
-  /demande/emp/{id}:
-    get:
-      tags:
-      - "Demandes"
-      summary: "Get a single demande"
-      description: "Gets the specified demande for the authenticated user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the demande to get"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The requested demande"
-          schema:
-            $ref: "#/definitions/Demande"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Demande not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-    patch:
-      tags:
-      - "Demandes"
-      summary: "Update a single demande"
-      description: "Updates the specified demande for the authenticated user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the demande to update"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              description:
-                type: "string"
-                example: "demande of a birthday prime.."
-              montant:
-                type: "number"
-                example: "500000"
-              files:
-                type: "string"
-                example: "doc.pdf"
-      responses:
-        "200":
-          description: "The updated demande"
-          schema:
-            $ref: "#/definitions/Demande"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Demande not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-        "400":
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequest"
-  /demande/admin:
-    get:
-      tags:
-      - "Demandes"
-      summary: "Get all demandes"
-      description: "Gets all demandes for the authenticated admin user."
-      responses:
-        "200":
-          description: "The list of demandes"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Demande"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-  /demande/admin/{id}:
-    get:
-      tags:
-      - "Demandes"
-      summary: "Get a single demande"
-      description: "Gets the specified demande for the authenticated admin user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the demande to get"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The requested demande"
-          schema:
-            $ref: "#/definitions/Demande"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Demande not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-    patch:
-      tags:
-      - "Demandes"
-      summary: "acctept a demande "
-      description: "Updates the specified demande status for the authenticated admin user ."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the demande to update"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "Demande accepted successfully"
-          schema:
-            $ref: "#/definitions/Demande"
-        "401":
-            description: "Unauthorized"
-            schema:
-              $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Demande not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-  
-
-
-  /annonce/emp/getAllAnnonce:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get all annonces"
-      description: "Gets all annonces for the authenticated employer user."
-      responses:
-        "200":
-          description: "The list of annonces"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Annonce"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-  /annonce/emp/suscribeAnnonce/{id}:
-    post:
-      tags:
-      - "Annonces"
-      summary: "Subscribe in annonce"
-      description: "Subscribe in a single annonce for the authenticated employer user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to Subscribe"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The annonce subscribed"
-          schema:
-            $ref: "#/definitions/AnnonceEmpInscrits"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Annonce not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-  /annonce/emp/desuscribeAnnonce/{id}:
-    delete:
-      tags:
-      - "Annonces"
-      summary: "Desubscribe in annonce"
-      description: "Desubscribe in a single annonce for the authenticated employer user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to Desubscribe"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The annonce desubscribed"
-          schema:
-            $ref: "#/definitions/AnnonceEmpAdmits"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Annonce not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-        "400":
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequestError"
-  /annonce/emp/getSingleAnnonce/{id}:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get a single annonce"
-      description: "Gets the specified annonce for the authenticated user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to get"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The requested annonce"
-          schema:
-            $ref: "#/definitions/Annonce"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Demande not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-  /annonce/emp/getMyAnnonce:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get my subscribed annonces"
-      description: "Gets all subscribed annonces for the authenticated employer user."
-      responses:
-       "200":
-          description: "The authenticated employer's annonces"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/AnnonceEmpInscrits"
-
-       "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-
-  /annonce/admin/createAnnonce:
-    post:
-      tags:
-      - "Annonces"
-      summary: "Create a new annonce"
-      description: "Creates a new annonce for the authenticated admin user."
-      parameters:
-        - name: "body"
-          in: "body"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              description:
-                type: "string"
-                example: "Umrah"
-                required: true
-              deadline:
-                type: "date"
-                example: "2023-05-24"
-                required: true
-      responses:
-        "201":
-          description: "The created annonce"
-          schema:
-            $ref: "#/definitions/Annonce"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "400":
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequest"
-  /annonce/admin/getAllAnnonce:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get all annonces"
-      description: "Gets all annonces for the authenticated admin user."
-      responses:
-        "200":
-          description: "The list of annonces"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Annonce"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-  /annonce/admin/getSingleAnnonce/{id}:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get a single annonce"
-      description: "Gets the specified annonce for the authenticated admin user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to get"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The requested annonce"
-          schema:
-            $ref: "#/definitions/Annonce"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Annonce not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-  /annonce/admin/updateAnnonce/{id}: 
-    put:
-      tags:
-      - "Annonces"
-      summary: "Update a single annonce"
-      description: "Updates the specified annonce for the authenticated admin user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to update"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          required: true
-          schema:
-            type: "object"
-            properties:
-              description:
-                type: "string"
-                example: "Umrah"
-              deadline:
-                type: "date"
-                example: "2023-05-24"
-      responses:
-        "200":
-          description: "The updated annonce"
-          schema:
-            $ref: "#/definitions/Annonce"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Annonce not found"
-          schema:
-            $ref: "#/components/schemas/NotFound"
-        "400":
-          description: "Bad request"
-          schema:
-            $ref: "#/components/schemas/BadRequest"
-  /annonce/admin/getAllEmpInscrit/{id}:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get employers subscribed."
-      description: "Get all employers subscribed in a single annonce for the authenticated admin."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to get the employers subscribed"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The employers subscribed in requested annonce"
-          schema:
-            $ref: "#/definitions/AnnonceEmpInscrits"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Annonce not found"
-          schema:
-            $ref: "#/components/schemas/NotFound" 
-  /annonce/admin/admisAnnonce/{id}:
-    post:
-      tags:
-      - "Annonces"
-      summary: "Add employer to winners liste of announce"
-      description: "Add employer to winners liste of a single annonce for the authenticated admin user."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to update"
-          required: true
-          type: "string"
-        - name: "id"
-          in: "body"
-          description: "ID of the winner employer"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The annonce subscribed"
-          schema:
-            $ref: "#/definitions/AnnonceEmpAdmits"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Annonce not found"
-          schema:
-            $ref: "#/components/schemas/NotFound" 
-  /annonce/admin/getAllEmpAdmis/{id}:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get the winners."
-      description: "Get all winners in a single annonce for the authenticated admin."
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "ID of the annonce to get the employers subscribed"
-          required: true
-          type: "string"
-      responses:
-        "200":
-          description: "The employers win in requested annonce"
-          schema:
-            $ref: "#/definitions/AnnonceEmpAdmits"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-        "404":
-          description: "Annonce not found"
-          schema:
-            $ref: "#/components/schemas/NotFound" 
-
-  /annonce/admin/getWinners:
-    get:
-      tags:
-      - "Annonces"
-      summary: "Get all winners of all annonces ."
-      description: "Get all winners in every annonce for the authenticated admin."
-      responses:
-        "200":
-          description: "The winners employer with the annonce"
-          schema:
-            $ref: "#/definitions/AnnonceEmpAdmits"
-        "401":
-          description: "Unauthorized"
-          schema:
-            $ref: "#/components/schemas/Unauthenticated"
-
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.socialassistance.com/api/v1
+    description: Production server
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    
   schemas:
-    BadRequestError:
-      type: object
-      properties:
-        message:
-          type: string
-          description: The error message
-      example:
-        message: Email already exists
-    BadRequest:
+    # Common schemas
+    Error:
       type: object
       properties:
         message:
           type: string
           description: Error message
-      example:
-        message: Please provide email and password
-    Unauthenticated:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Error message
-      example:
-        message: Invalid Credentials
-    NotFound:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Error message
-      example:
-        message: The requested resource was not found
-definitions:
-    Demande:
-      type: "object"
-      properties:
-        id:
-          type: "string"
-          readOnly: true
-        user:
-          type: "string"
-        status:
-          type: "string"
-          enum:
-            - "pending"
-            - "rejected"
-            - "accepted"
-            - "paied"
-        description:
-          type: "string"
-        montant:
-          type: "number"
-        files:
-          type: "array"
+        statusCode:
+          type: integer
+          description: HTTP status code
+        errors:
+          type: array
           items:
-            type: "string"
+            type: string
+          description: Detailed validation errors
       required:
-        - user
-        - status
-        - montant
+        - message
+        - statusCode
 
-    Annonce:
+    PaginationInfo:
+      type: object
+      properties:
+        currentPage:
+          type: integer
+        totalPages:
+          type: integer
+        totalCount:
+          type: integer
+        hasNextPage:
+          type: boolean
+        hasPrevPage:
+          type: boolean
+
+    # User schemas
+    User:
       type: object
       properties:
         _id:
           type: string
-          format: uuid
-        description:
+          description: User ID
+        name:
           type: string
-          description: The description of the Annonce
-        deadline:
+          description: Full name
+        email:
           type: string
-          format: date-time
-          description: The deadline of the Annonce
+          format: email
+        phoneNumber:
+          type: string
+        role:
+          type: string
+          enum: [admin, user, case_worker, finance_manager]
+        accountStatus:
+          type: string
+          enum: [active, inactive, suspended, pending_verification]
+        isEmailVerified:
+          type: boolean
+        eligibility:
+          $ref: '#/components/schemas/Eligibility'
         createdAt:
           type: string
           format: date-time
@@ -835,76 +103,2447 @@ definitions:
           type: string
           format: date-time
 
-    AnnonceEmpInscrits:
+    Eligibility:
       type: object
       properties:
-        annonce:
-          type: string
-          format: uuid
-          description: The ID of the annonce.
-        emplInscrits:
-          type: string
-          format: uuid
-          description: The ID of the employee who applied to the annonce.
         status:
           type: string
-          enum: ['pending', 'rejected']
-          default: 'pending'
-          description: The status of the application.
-      required:
-        - annonce
-        - emplInscrits
-    
-    AnnonceEmpAdmits:
-      type: object
-      properties:
-        annonce:
+          enum: [pending, verified, rejected, requires_update]
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+        categories:
+          type: array
+          items:
+            type: string
+        lastVerificationDate:
           type: string
-          description: The ID of the associated Annonce object.
-        empAdmis:
-          type: string
-          description: The ID of the associated User object.
-        status:
-          type: string
-          enum: ['not-paied', 'paied']
-          default: 'not-paied'
-          description: The status of the employee's payment for the given annonce.
-      required:
-        - annonce
-        - empAdmis
+          format: date-time
 
-    User:
+    # Request/Demande schemas
+    Demande:
       type: object
-      required:
-        - name
-        - email
-        - password
       properties:
         _id:
-          type: "string"
-          example: "613f7b11a24bb031683a1c2f"
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [draft, submitted, under_review, pending_docs, approved, partially_paid, paid, rejected, cancelled]
+        requestedAmount:
+          type: number
+          format: decimal
+        approvedAmount:
+          type: number
+          format: decimal
+        paidAmount:
+          type: number
+          format: decimal
+        category:
+          type: string
+          enum: [medical, education, housing, food, employment, disability, elderly, child_welfare, other]
+        urgencyLevel:
+          type: string
+          enum: [low, medium, high, critical]
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        applicant:
+          $ref: '#/components/schemas/User'
+        assignedTo:
+          $ref: '#/components/schemas/User'
+        program:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [Content, Announcement]
+            id:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    # Budget Pool schemas
+    BudgetPool:
+      type: object
+      properties:
+        _id:
+          type: string
         name:
           type: string
-          minLength: 3
-          maxLength: 50
-          example: "John Doe"
-        email:
+        description:
           type: string
-          format: email
-          example: "johndoe@example.com"
-        password:
+        totalAmount:
+          type: number
+          format: decimal
+        allocatedAmount:
+          type: number
+          format: decimal
+        reservedAmount:
+          type: number
+          format: decimal
+        spentAmount:
+          type: number
+          format: decimal
+        availableAmount:
+          type: number
+          format: decimal
+        utilizationRate:
+          type: number
+          format: decimal
+        status:
           type: string
-          minLength: 6
-          example: "password123456"
-        role:
+          enum: [draft, active, frozen, depleted, expired, cancelled, transferred]
+        fiscalYear:
+          type: integer
+        department:
           type: string
-          enum:
-            - admin
-            - user
-          default: user
-          example: "user"
-      example:
-        name: John Doe
-        email: john.doe@example.com
-        password: password123
-        role: user
+        fundingSource:
+          type: string
+        managedBy:
+          $ref: '#/components/schemas/User'
+        budgetPeriod:
+          type: object
+          properties:
+            startDate:
+              type: string
+              format: date
+            endDate:
+              type: string
+              format: date
+        createdAt:
+          type: string
+          format: date-time
+
+    # Payment schemas
+    Payment:
+      type: object
+      properties:
+        _id:
+          type: string
+        amount:
+          type: number
+          format: decimal
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, cancelled, reversed]
+        paymentMethod:
+          type: string
+          enum: [bank_transfer, check, cash, mobile_money, card]
+        demande:
+          $ref: '#/components/schemas/Demande'
+        recipient:
+          $ref: '#/components/schemas/User'
+        budgetPool:
+          $ref: '#/components/schemas/BudgetPool'
+        processedAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    # Notification schemas
+    Notification:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+          enum: [system, alert, reminder, announcement, request_status, payment_status, approval_required, document_required]
+        recipient:
+          $ref: '#/components/schemas/User'
+        isRead:
+          type: boolean
+        isClicked:
+          type: boolean
+        actionRequired:
+          type: boolean
+        actionType:
+          type: string
+        channels:
+          type: object
+          properties:
+            inApp:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                deliveredAt:
+                  type: string
+                  format: date-time
+            email:
+              type: object
+              properties:
+                enabled:
+                  type: boolean
+                deliveredAt:
+                  type: string
+                  format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    # Content schemas
+    Content:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        contentType:
+          type: string
+          enum: [program, service, benefit, assistance, training, other]
+        category:
+          type: string
+          enum: [medical, education, housing, food, employment, disability, elderly, child_welfare, other]
+        status:
+          type: string
+          enum: [draft, active, inactive, archived]
+        eligibilityRequirements:
+          type: array
+          items:
+            type: object
+            properties:
+              requirement:
+                type: string
+              type:
+                type: string
+              value:
+                oneOf:
+                  - type: string
+                  - type: number
+                  - type: boolean
+        benefitAmount:
+          type: object
+          properties:
+            type:
+              type: string
+              enum: [fixed, percentage, range, calculated]
+            value:
+              type: number
+        createdAt:
+          type: string
+          format: date-time
+
+    # Announcement schemas
+    Announcement:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        type:
+          type: string
+          enum: [event, program, service, opportunity, notice]
+        targetAudience:
+          type: string
+          enum: [all, students, families, elderly, disabled, unemployed, specific]
+        status:
+          type: string
+          enum: [draft, published, archived, expired]
+        maxParticipants:
+          type: integer
+        currentParticipants:
+          type: integer
+        applicationDeadline:
+          type: string
+          format: date-time
+        createdBy:
+          $ref: '#/components/schemas/User'
+        createdAt:
+          type: string
+          format: date-time
+
+paths:
+  # Health Check
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check endpoint
+      description: Check API health and database connectivity
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  timestamp:
+                    type: string
+                    format: date-time
+                  uptime:
+                    type: number
+                  environment:
+                    type: string
+                  database:
+                    type: string
+        '503':
+          description: System is unhealthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # Authentication endpoints
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register new user
+      description: Create a new user account with email verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, name, password, phoneNumber]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                name:
+                  type: string
+                  example: John Doe
+                password:
+                  type: string
+                  minLength: 8
+                  example: SecurePass123!
+                phoneNumber:
+                  type: string
+                  example: "+1234567890"
+                personalInfo:
+                  type: object
+                  properties:
+                    nationalId:
+                      type: string
+                    dateOfBirth:
+                      type: string
+                      format: date
+                economicInfo:
+                  type: object
+                  properties:
+                    familySize:
+                      type: integer
+                    monthlyIncome:
+                      type: number
+                    employmentStatus:
+                      type: string
+                      enum: [employed, unemployed, self_employed, retired, student, disabled]
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: User login
+      description: Authenticate user and return JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  example: SecurePass123!
+                rememberMe:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+          headers:
+            Set-Cookie:
+              description: JWT token in HTTP-only cookie
+              schema:
+                type: string
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: User logout
+      description: Clear authentication cookies
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/verify-email:
+    post:
+      tags: [Authentication]
+      summary: Verify email address
+      description: Verify user email using verification token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, email]
+              properties:
+                token:
+                  type: string
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Email verified successfully
+        '400':
+          description: Invalid or expired token
+
+  /auth/resend-verification:
+    post:
+      tags: [Authentication]
+      summary: Resend verification email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Verification email sent
+
+  /auth/forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Request password reset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '200':
+          description: Password reset email sent (if account exists)
+
+  /auth/reset-password:
+    post:
+      tags: [Authentication]
+      summary: Reset password using token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, email, password, confirmPassword]
+              properties:
+                token:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password reset successfully
+
+  /auth/change-password:
+    post:
+      tags: [Authentication]
+      summary: Change password (authenticated users)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [currentPassword, newPassword, confirmPassword]
+              properties:
+                currentPassword:
+                  type: string
+                newPassword:
+                  type: string
+                confirmPassword:
+                  type: string
+      responses:
+        '200':
+          description: Password changed successfully
+
+  /auth/me:
+    get:
+      tags: [Authentication]
+      summary: Get current user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+
+  /auth/profile:
+    patch:
+      tags: [Authentication]
+      summary: Update user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phoneNumber:
+                  type: string
+                personalInfo:
+                  type: object
+                economicInfo:
+                  type: object
+                preferences:
+                  type: object
+      responses:
+        '200':
+          description: Profile updated successfully
+
+  # User Management endpoints
+  /users:
+    get:
+      tags: [Users]
+      summary: Get all users (Admin/Case Worker only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [admin, user, case_worker, finance_manager]
+        - name: accountStatus
+          in: query
+          schema:
+            type: string
+            enum: [active, inactive, suspended, pending_verification]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  users:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+
+  /users/{id}:
+    get:
+      tags: [Users]
+      summary: Get single user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+
+    patch:
+      tags: [Users]
+      summary: Update user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                phoneNumber:
+                  type: string
+                role:
+                  type: string
+                  enum: [admin, user, case_worker, finance_manager]
+                accountStatus:
+                  type: string
+                  enum: [active, inactive, suspended, pending_verification]
+      responses:
+        '200':
+          description: User updated successfully
+
+    delete:
+      tags: [Users]
+      summary: Delete user (soft delete)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted successfully
+
+  /users/{id}/restore:
+    patch:
+      tags: [Users]
+      summary: Restore deleted user
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User restored successfully
+
+  /users/{id}/verify-documents:
+    patch:
+      tags: [Users]
+      summary: Verify user documents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [documentType, status]
+              properties:
+                documentType:
+                  type: string
+                  enum: [nationalIdCard, incomeProof, familyComposition, residenceProof]
+                status:
+                  type: string
+                  enum: [pending, verified, rejected]
+                rejectionReason:
+                  type: string
+      responses:
+        '200':
+          description: Document verification updated
+
+  /users/{id}/calculate-eligibility:
+    patch:
+      tags: [Users]
+      summary: Calculate user eligibility score
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Eligibility calculated successfully
+
+  /users/bulk-update:
+    patch:
+      tags: [Users]
+      summary: Bulk update users
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [userIds, action]
+              properties:
+                userIds:
+                  type: array
+                  items:
+                    type: string
+                action:
+                  type: string
+                  enum: [updateStatus, updateRole, delete, restore]
+                data:
+                  type: object
+      responses:
+        '200':
+          description: Bulk operation completed
+
+  # Request/Demande Management endpoints
+  /demandes:
+    get:
+      tags: [Requests]
+      summary: Get all requests
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: assignedTo
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Requests retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  demandes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Demande'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+
+    post:
+      tags: [Requests]
+      summary: Create new request
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, requestedAmount, program]
+              properties:
+                title:
+                  type: string
+                  example: Emergency Medical Assistance
+                description:
+                  type: string
+                  example: Need assistance for urgent medical treatment
+                requestedAmount:
+                  type: number
+                  example: 5000
+                program:
+                  type: object
+                  required: [type, id]
+                  properties:
+                    type:
+                      type: string
+                      enum: [Content, Announcement]
+                    id:
+                      type: string
+                category:
+                  type: string
+                  enum: [medical, education, housing, food, employment, other]
+                urgencyLevel:
+                  type: string
+                  enum: [low, medium, high, critical]
+                  default: medium
+      responses:
+        '201':
+          description: Request created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  demande:
+                    $ref: '#/components/schemas/Demande'
+
+  /demandes/dashboard-stats:
+    get:
+      tags: [Requests]
+      summary: Get dashboard statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statistics:
+                    type: object
+                  recentActivity:
+                    type: array
+
+  /demandes/status/{status}:
+    get:
+      tags: [Requests]
+      summary: Get requests by status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [draft, submitted, under_review, pending_docs, approved, paid, rejected, cancelled]
+      responses:
+        '200':
+          description: Requests filtered by status
+
+  /demandes/export:
+    get:
+      tags: [Requests]
+      summary: Export requests data
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [csv, json]
+            default: csv
+      responses:
+        '200':
+          description: Exported data file
+
+  /demandes/{id}:
+    get:
+      tags: [Requests]
+      summary: Get single request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Request details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  demande:
+                    $ref: '#/components/schemas/Demande'
+
+    patch:
+      tags: [Requests]
+      summary: Update request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                requestedAmount:
+                  type: number
+                urgencyLevel:
+                  type: string
+      responses:
+        '200':
+          description: Request updated successfully
+
+  /demandes/{id}/submit:
+    post:
+      tags: [Requests]
+      summary: Submit request for review
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Request submitted successfully
+
+  /demandes/{id}/review:
+    patch:
+      tags: [Requests]
+      summary: Review request (Admin/Case Worker)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision:
+                  type: string
+                  enum: [approved, rejected]
+                approvedAmount:
+                  type: number
+                reviewNotes:
+                  type: string
+                rejectionCategory:
+                  type: string
+                rejectionDescription:
+                  type: string
+                budgetPoolId:
+                  type: string
+      responses:
+        '200':
+          description: Request reviewed successfully
+
+  /demandes/{id}/assign:
+    patch:
+      tags: [Requests]
+      summary: Assign request to case worker
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assignedTo:
+                  type: string
+      responses:
+        '200':
+          description: Request assigned successfully
+
+  /demandes/{id}/cancel:
+    patch:
+      tags: [Requests]
+      summary: Cancel request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Request cancelled successfully
+
+  /demandes/{id}/comments:
+    post:
+      tags: [Requests]
+      summary: Add comment to request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [content]
+              properties:
+                content:
+                  type: string
+                isInternal:
+                  type: boolean
+                  default: false
+      responses:
+        '200':
+          description: Comment added successfully
+
+  /demandes/{id}/documents:
+    post:
+      tags: [Requests]
+      summary: Upload documents for request
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                documents:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '200':
+          description: Documents uploaded successfully
+
+  /demandes/{id}/documents/{documentId}:
+    patch:
+      tags: [Requests]
+      summary: Verify document
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: documentId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [isVerified]
+              properties:
+                isVerified:
+                  type: boolean
+                verificationNotes:
+                  type: string
+      responses:
+        '200':
+          description: Document verification updated
+
+  /demandes/{id}/request-documents:
+    post:
+      tags: [Requests]
+      summary: Request additional documents
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [requestMessage, requiredDocuments]
+              properties:
+                requestMessage:
+                  type: string
+                requiredDocuments:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Document request sent successfully
+
+  # Payment endpoints
+  /payments:
+    get:
+      tags: [Payments]
+      summary: Get all payments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payments retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Payment'
+
+    post:
+      tags: [Payments]
+      summary: Create payment
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, paymentMethod, demandeId]
+              properties:
+                amount:
+                  type: number
+                  format: decimal
+                paymentMethod:
+                  type: string
+                  enum: [bank_transfer, check, cash, mobile_money, card]
+                demandeId:
+                  type: string
+                budgetPool:
+                  type: string
+                recipient:
+                  type: object
+                  required: [name]
+                  properties:
+                    name:
+                      type: string
+                    accountNumber:
+                      type: string
+                    bankName:
+                      type: string
+                    phoneNumber:
+                      type: string
+                scheduledDate:
+                  type: string
+                  format: date-time
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Payment created successfully
+
+  /payments/dashboard-stats:
+    get:
+      tags: [Payments]
+      summary: Get payment dashboard statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Payment statistics
+
+  /payments/{id}:
+    get:
+      tags: [Payments]
+      summary: Get single payment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment:
+                    $ref: '#/components/schemas/Payment'
+
+    patch:
+      tags: [Payments]
+      summary: Update payment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [pending, processing, completed, failed, cancelled]
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Payment updated successfully
+
+  /payments/{id}/process:
+    post:
+      tags: [Payments]
+      summary: Process payment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment processed successfully
+
+  /payments/{id}/cancel:
+    post:
+      tags: [Payments]
+      summary: Cancel payment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Payment cancelled successfully
+
+  /payments/{id}/retry:
+    post:
+      tags: [Payments]
+      summary: Retry failed payment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Payment retry initiated
+
+  # Budget Pool endpoints
+  /budget-pools:
+    get:
+      tags: [Budget Pools]
+      summary: Get all budget pools
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: fiscalYear
+          in: query
+          schema:
+            type: integer
+        - name: department
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Budget pools retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  budgetPools:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BudgetPool'
+                  pagination:
+                    $ref: '#/components/schemas/PaginationInfo'
+
+    post:
+      tags: [Budget Pools]
+      summary: Create budget pool
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, description, totalAmount, fiscalYear, budgetPeriod, department, fundingSource]
+              properties:
+                name:
+                  type: string
+                  example: Emergency Assistance Fund 2024
+                description:
+                  type: string
+                  example: Budget pool for emergency medical assistance
+                totalAmount:
+                  type: number
+                  format: decimal
+                  example: 100000
+                fiscalYear:
+                  type: integer
+                  example: 2024
+                budgetPeriod:
+                  type: object
+                  required: [startDate, endDate]
+                  properties:
+                    startDate:
+                      type: string
+                      format: date
+                      example: "2024-01-01"
+                    endDate:
+                      type: string
+                      format: date
+                      example: "2024-12-31"
+                department:
+                  type: string
+                  example: Social Services
+                fundingSource:
+                  type: string
+                  enum: [government, donations, grants, internal, international, other]
+                program:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: [Content, Announcement]
+                    id:
+                      type: string
+                allocationRules:
+                  type: object
+                  properties:
+                    maxAmountPerRequest:
+                      type: number
+                    maxRequestsPerUser:
+                      type: integer
+                    allowedCategories:
+                      type: array
+                      items:
+                        type: string
+                    eligibilityThreshold:
+                      type: number
+                      default: 50
+                alertThresholds:
+                  type: object
+                  properties:
+                    lowBalanceWarning:
+                      type: number
+                      default: 20
+                    criticalBalanceAlert:
+                      type: number
+                      default: 5
+                    expirationWarning:
+                      type: number
+                      default: 30
+      responses:
+        '201':
+          description: Budget pool created successfully
+
+  /budget-pools/dashboard-stats:
+    get:
+      tags: [Budget Pools]
+      summary: Get budget dashboard statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Budget pool statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statistics:
+                    type: object
+                  recentActivity:
+                    type: array
+
+  /budget-pools/{id}:
+    get:
+      tags: [Budget Pools]
+      summary: Get single budget pool
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Budget pool details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  budgetPool:
+                    $ref: '#/components/schemas/BudgetPool'
+                  analytics:
+                    type: object
+                  alerts:
+                    type: array
+
+    patch:
+      tags: [Budget Pools]
+      summary: Update budget pool
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                totalAmount:
+                  type: number
+                status:
+                  type: string
+                  enum: [draft, active, frozen, depleted, expired, cancelled]
+                allocationRules:
+                  type: object
+                alertThresholds:
+                  type: object
+      responses:
+        '200':
+          description: Budget pool updated successfully
+
+    delete:
+      tags: [Budget Pools]
+      summary: Delete budget pool
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Budget pool deleted successfully
+
+  /budget-pools/{id}/allocate:
+    post:
+      tags: [Budget Pools]
+      summary: Allocate funds from budget pool
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [demandeId, amount]
+              properties:
+                demandeId:
+                  type: string
+                amount:
+                  type: number
+                  format: decimal
+                notes:
+                  type: string
+      responses:
+        '200':
+          description: Funds allocated successfully
+
+  /budget-pools/{id}/transfer:
+    post:
+      tags: [Budget Pools]
+      summary: Transfer funds between budget pools
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetPoolId, amount, reason]
+              properties:
+                targetPoolId:
+                  type: string
+                amount:
+                  type: number
+                  format: decimal
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Transfer initiated successfully
+
+  /budget-pools/{id}/analytics:
+    get:
+      tags: [Budget Pools]
+      summary: Get budget pool analytics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [3months, 6months, 1year]
+            default: 6months
+      responses:
+        '200':
+          description: Budget pool analytics
+
+  # Notification endpoints
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: Get all notifications (Staff only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  notifications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Notification'
+
+    post:
+      tags: [Notifications]
+      summary: Create notification
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, message, type, recipient]
+              properties:
+                title:
+                  type: string
+                message:
+                  type: string
+                type:
+                  type: string
+                  enum: [system, alert, reminder, announcement, request_status, payment_status, approval_required, document_required]
+                recipient:
+                  type: string
+                actionRequired:
+                  type: boolean
+                  default: false
+                actionType:
+                  type: string
+                channels:
+                  type: object
+                  properties:
+                    inApp:
+                      type: object
+                      properties:
+                        enabled:
+                          type: boolean
+                    email:
+                      type: object
+                      properties:
+                        enabled:
+                          type: boolean
+      responses:
+        '201':
+          description: Notification created successfully
+
+  /notifications/user-notifications:
+    get:
+      tags: [Notifications]
+      summary: Get current user's notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: isRead
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: User notifications retrieved successfully
+
+  /notifications/{id}/read:
+    patch:
+      tags: [Notifications]
+      summary: Mark notification as read
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notification marked as read
+
+  /notifications/{id}/click:
+    patch:
+      tags: [Notifications]
+      summary: Mark notification as clicked
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Notification marked as clicked
+
+  /notifications/bulk:
+    post:
+      tags: [Notifications]
+      summary: Send bulk notifications
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [recipients, title, message, type]
+              properties:
+                recipients:
+                  type: array
+                  items:
+                    type: string
+                title:
+                  type: string
+                message:
+                  type: string
+                type:
+                  type: string
+      responses:
+        '200':
+          description: Bulk notifications sent
+
+  /notifications/retry-failed:
+    post:
+      tags: [Notifications]
+      summary: Retry failed notifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Failed notifications retried
+
+  /notifications/stats:
+    get:
+      tags: [Notifications]
+      summary: Get notification statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Notification statistics
+
+  /notifications/templates:
+    post:
+      tags: [Notifications]
+      summary: Create notification template
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, subject, body, type]
+              properties:
+                name:
+                  type: string
+                subject:
+                  type: string
+                body:
+                  type: string
+                type:
+                  type: string
+      responses:
+        '201':
+          description: Template created successfully
+
+  /notifications/process-scheduled:
+    post:
+      tags: [Notifications]
+      summary: Process scheduled notifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Scheduled notifications processed
+
+  /notifications/clean-expired:
+    post:
+      tags: [Notifications]
+      summary: Clean expired notifications
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Expired notifications cleaned
+
+  # Content Management endpoints
+  /content:
+    get:
+      tags: [Content]
+      summary: Get all content
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: contentType
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Content'
+
+    post:
+      tags: [Content]
+      summary: Create new content
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, description, contentType, category, eligibilityRequirements]
+              properties:
+                name:
+                  type: string
+                  example: Emergency Medical Assistance Program
+                description:
+                  type: string
+                  example: Financial assistance for urgent medical needs
+                contentType:
+                  type: string
+                  enum: [program, service, benefit, assistance, training, other]
+                category:
+                  type: string
+                  enum: [medical, education, housing, food, employment, disability, elderly, child_welfare, other]
+                eligibilityRequirements:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      requirement:
+                        type: string
+                      type:
+                        type: string
+                      value:
+                        oneOf:
+                          - type: string
+                          - type: number
+                          - type: boolean
+                benefitAmount:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      enum: [fixed, percentage, range, calculated]
+                    value:
+                      type: number
+                applicationPeriod:
+                  type: object
+                  properties:
+                    startDate:
+                      type: string
+                      format: date
+                    endDate:
+                      type: string
+                      format: date
+      responses:
+        '201':
+          description: Content created successfully
+
+  /content/analytics:
+    get:
+      tags: [Content]
+      summary: Get content analytics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Content analytics
+
+  /content/{id}:
+    get:
+      tags: [Content]
+      summary: Get single content
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  content:
+                    $ref: '#/components/schemas/Content'
+
+    patch:
+      tags: [Content]
+      summary: Update content
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [draft, active, inactive, archived]
+      responses:
+        '200':
+          description: Content updated successfully
+
+    delete:
+      tags: [Content]
+      summary: Delete content
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content deleted successfully
+
+  /content/{id}/publish:
+    patch:
+      tags: [Content]
+      summary: Publish content
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Content published successfully
+
+  /content/{id}/hierarchy:
+    patch:
+      tags: [Content]
+      summary: Manage content hierarchy
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parentId:
+                  type: string
+                order:
+                  type: integer
+      responses:
+        '200':
+          description: Content hierarchy updated
+
+  # Announcement endpoints
+  /announcements:
+    get:
+      tags: [Announcements]
+      summary: Get all announcements
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: targetAudience
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Announcements retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  announcements:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Announcement'
+
+    post:
+      tags: [Announcements]
+      summary: Create new announcement
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, type, targetAudience]
+              properties:
+                title:
+                  type: string
+                  example: Job Training Program Opening
+                description:
+                  type: string
+                  example: New vocational training program for unemployed individuals
+                type:
+                  type: string
+                  enum: [event, program, service, opportunity, notice]
+                targetAudience:
+                  type: string
+                  enum: [all, students, families, elderly, disabled, unemployed, specific]
+                maxParticipants:
+                  type: integer
+                  example: 50
+                applicationDeadline:
+                  type: string
+                  format: date-time
+                requirements:
+                  type: array
+                  items:
+                    type: string
+                benefits:
+                  type: array
+                  items:
+                    type: string
+                location:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    city:
+                      type: string
+                    venue:
+                      type: string
+                    isOnline:
+                      type: boolean
+                    onlineLink:
+                      type: string
+                      format: uri
+      responses:
+        '201':
+          description: Announcement created successfully
+
+  /announcements/stats:
+    get:
+      tags: [Announcements]
+      summary: Get announcement statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Announcement statistics
+
+  /announcements/{id}:
+    get:
+      tags: [Announcements]
+      summary: Get single announcement
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Announcement details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  announcement:
+                    $ref: '#/components/schemas/Announcement'
+
+    patch:
+      tags: [Announcements]
+      summary: Update announcement
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [draft, published, archived, expired]
+                maxParticipants:
+                  type: integer
+      responses:
+        '200':
+          description: Announcement updated successfully
+
+  /announcements/{id}/publish:
+    patch:
+      tags: [Announcements]
+      summary: Publish announcement
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Announcement published successfully
+
+  /announcements/{id}/apply:
+    post:
+      tags: [Announcements]
+      summary: Apply to announcement
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                additionalInfo:
+                  type: string
+                attachments:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Application submitted successfully
+
+  /announcements/{id}/participants/{userId}/review:
+    patch:
+      tags: [Announcements]
+      summary: Review participant application
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [decision]
+              properties:
+                decision:
+                  type: string
+                  enum: [accepted, rejected, waitlisted]
+                reviewNotes:
+                  type: string
+      responses:
+        '200':
+          description: Application reviewed successfully
+
+tags:
+  - name: Health
+    description: System health and monitoring
+  - name: Authentication
+    description: User authentication and authorization
+  - name: Users
+    description: User management and administration
+  - name: Requests
+    description: Social assistance request management
+  - name: Payments
+    description: Payment processing and management
+  - name: Budget Pools
+    description: Budget allocation and tracking
+  - name: Notifications
+    description: Notification system and messaging
+  - name: Content
+    description: Program and service content management
+  - name: Announcements
+    description: Announcement and event management
+
+# Security
+security:
+  - bearerAuth: []
