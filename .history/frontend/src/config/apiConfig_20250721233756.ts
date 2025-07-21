@@ -28,7 +28,7 @@ export const API_CONFIG = {
     USERS: {
       GET_ALL: '/users',
       CREATE: '/users',  // ← ADD THIS (missing for creating users)
-      DASHBOARD_STATS: '/users/dashboard-stats',
+  DASHBOARD_STATS: '/users/dashboard-stats',
       GET_BY_ID: (id: string) => `/users/${id}`,
       UPDATE: (id: string) => `/users/${id}`,
       DELETE: (id: string) => `/users/${id}`,
@@ -134,49 +134,10 @@ export interface User {
   isEmailVerified: boolean;
   eligibility: {
     status: 'pending' | 'verified' | 'rejected' | 'requires_update';
-    score?: number;
-    categories?: string[];
+    score: number;
+    categories: string[];
     lastVerificationDate?: string;
-    lastAssessment?: string;
   };
-  // Include all the extended fields here too
-  personalInfo?: {
-    nationalId?: string;
-    dateOfBirth?: string;
-    gender?: 'male' | 'female' | 'other';
-    address?: {
-      wilaya?: string;
-      city?: string;
-      address?: string;
-    };
-  };
-  economicInfo?: {
-    familySize?: number;
-    monthlyIncome?: number;
-    employmentStatus?: 'employed' | 'unemployed' | 'self_employed' | 'retired' | 'student' | 'disabled';
-  };
-  preferences?: {
-    language?: 'en' | 'ar' | 'fr';
-    notifications?: {
-      email?: boolean;
-      sms?: boolean;
-      push?: boolean;
-    };
-  };
-  statistics?: {
-    totalRequests?: number;
-    approvedRequests?: number;
-    totalAmountReceived?: number;
-    lastActivity?: string;
-  };
-  documents?: Array<{
-    _id: string;
-    filename: string;
-    originalName: string;
-    documentType: string;
-    isVerified: boolean;
-    uploadedAt: string;
-  }>;
   createdAt: string;
   updatedAt: string;
 }

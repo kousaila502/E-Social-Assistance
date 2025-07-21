@@ -139,7 +139,7 @@ export interface User {
     lastVerificationDate?: string;
     lastAssessment?: string;
   };
-  // Include all the extended fields here too
+  // Extended fields from backend
   personalInfo?: {
     nationalId?: string;
     dateOfBirth?: string;

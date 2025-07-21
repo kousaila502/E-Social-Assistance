@@ -25,24 +25,14 @@ import {
 import userService from '../../services/userService';
 
 const mapSortKey = (key: keyof User | 'createdAt'): 'name' | 'email' | 'createdAt' | 'lastActivity' | 'eligibilityScore' => {
-  const sortMapping: Record<string, 'name' | 'email' | 'createdAt' | 'lastActivity' | 'eligibilityScore'> = {
-    'name': 'name',
-    'email': 'email',
-    'createdAt': 'createdAt',
-    'role': 'name',  // Backend doesn't support role sort, fallback to name
-    'accountStatus': 'name',  // Backend doesn't support status sort, fallback to name
-    'isEmailVerified': 'name',  // ← ADD THIS
-    'phoneNumber': 'name',  // ← ADD THIS
-    'eligibility': 'eligibilityScore',  // ← ADD THIS
-    'updatedAt': 'createdAt',  // ← ADD THIS
-    '_id': 'name',  // ← ADD THIS
-    'personalInfo': 'name',  // ← ADD THIS
-    'economicInfo': 'name',  // ← ADD THIS
-    'preferences': 'name',  // ← ADD THIS
-    'statistics': 'name',  // ← ADD THIS
-    'documents': 'name'  // ← ADD THIS
+  const sortMapping = {
+    'name': 'name' as const,
+    'email': 'email' as const,
+    'createdAt': 'createdAt' as const,
+    'role': 'name' as const,  // Backend doesn't support role sort, fallback to name
+    'accountStatus': 'name' as const,  // Backend doesn't support status sort, fallback to name
   };
-  return sortMapping[key as string] || 'createdAt';
+  return sortMapping[key] || 'createdAt';
 };
 
 interface UserTableProps {
@@ -79,8 +69,6 @@ const UserTable: React.FC<UserTableProps> = ({
   onUserEdit,
   onUserDelete,
   onBulkAction,
-  onUserStatusChange,
-  onRoleChange, 
   filters = {},
   refreshTrigger = 0
 }) => {
@@ -247,20 +235,20 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   const getEligibilityBadge = (eligibility: User['eligibility']) => {
-  const statusConfig = {
-    verified: { label: 'Verified', bgColor: 'bg-green-100', textColor: 'text-green-800' },
-    pending: { label: 'Pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
-    rejected: { label: 'Rejected', bgColor: 'bg-red-100', textColor: 'text-red-800' },
-    requires_update: { label: 'Update Required', bgColor: 'bg-orange-100', textColor: 'text-orange-800' }
-  };
+    const statusConfig = {
+      verified: { label: 'Verified', bgColor: 'bg-green-100', textColor: 'text-green-800' },
+      pending: { label: 'Pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
+      rejected: { label: 'Rejected', bgColor: 'bg-red-100', textColor: 'text-red-800' },
+      requires_update: { label: 'Update Required', bgColor: 'bg-orange-100', textColor: 'text-orange-800' }
+    };
 
-  const config = statusConfig[eligibility.status as keyof typeof statusConfig] || statusConfig.pending;
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config.bgColor} ${config.textColor}`}>
-      {config.label} ({eligibility.score || 0}/100)
-    </span>
-  );
-};
+    const config = statusConfig[eligibility.status as keyof typeof statusConfig] || statusConfig.pending;
+    return (
+      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config.bgColor} ${config.textColor}`}>
+        {config.label} ({eligibility.score}/100)
+      </span>
+    );
+  };
 
   const SortIcon = ({ column }: { column: keyof User | 'createdAt' }) => {
     if (sortConfig.key !== column) {

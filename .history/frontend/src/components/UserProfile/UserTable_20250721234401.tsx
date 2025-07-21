@@ -22,28 +22,6 @@ import {
   ChevronDownIcon,
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
-import userService from '../../services/userService';
-
-const mapSortKey = (key: keyof User | 'createdAt'): 'name' | 'email' | 'createdAt' | 'lastActivity' | 'eligibilityScore' => {
-  const sortMapping: Record<string, 'name' | 'email' | 'createdAt' | 'lastActivity' | 'eligibilityScore'> = {
-    'name': 'name',
-    'email': 'email',
-    'createdAt': 'createdAt',
-    'role': 'name',  // Backend doesn't support role sort, fallback to name
-    'accountStatus': 'name',  // Backend doesn't support status sort, fallback to name
-    'isEmailVerified': 'name',  // ← ADD THIS
-    'phoneNumber': 'name',  // ← ADD THIS
-    'eligibility': 'eligibilityScore',  // ← ADD THIS
-    'updatedAt': 'createdAt',  // ← ADD THIS
-    '_id': 'name',  // ← ADD THIS
-    'personalInfo': 'name',  // ← ADD THIS
-    'economicInfo': 'name',  // ← ADD THIS
-    'preferences': 'name',  // ← ADD THIS
-    'statistics': 'name',  // ← ADD THIS
-    'documents': 'name'  // ← ADD THIS
-  };
-  return sortMapping[key as string] || 'createdAt';
-};
 
 interface UserTableProps {
   onUserSelect?: (user: User) => void;
@@ -79,8 +57,6 @@ const UserTable: React.FC<UserTableProps> = ({
   onUserEdit,
   onUserDelete,
   onBulkAction,
-  onUserStatusChange,
-  onRoleChange, 
   filters = {},
   refreshTrigger = 0
 }) => {
@@ -108,6 +84,94 @@ const UserTable: React.FC<UserTableProps> = ({
   const itemsPerPage = 20;
   const isAdmin = hasRole('admin');
 
+  // Mock users data - in real app, this would come from API
+  const mockUsers: User[] = [
+    {
+      _id: '1',
+      name: 'John Doe',
+      email: 'john.doe@example.com',
+      phoneNumber: '+1234567890',
+      role: 'user',
+      accountStatus: 'active',
+      isEmailVerified: true,
+      eligibility: {
+        status: 'verified',
+        score: 85,
+        categories: ['medical', 'housing'],
+        lastVerificationDate: '2024-01-15T10:00:00Z'
+      },
+      createdAt: '2024-01-10T08:00:00Z',
+      updatedAt: '2024-01-15T10:00:00Z'
+    },
+    {
+      _id: '2',
+      name: 'Sarah Johnson',
+      email: 'sarah.johnson@agency.com',
+      phoneNumber: '+1234567891',
+      role: 'case_worker',
+      accountStatus: 'active',
+      isEmailVerified: true,
+      eligibility: {
+        status: 'verified',
+        score: 100,
+        categories: [],
+        lastVerificationDate: '2024-01-01T00:00:00Z'
+      },
+      createdAt: '2024-01-01T08:00:00Z',
+      updatedAt: '2024-01-10T10:00:00Z'
+    },
+    {
+      _id: '3',
+      name: 'Mike Chen',
+      email: 'mike.chen@agency.com',
+      phoneNumber: '+1234567892',
+      role: 'finance_manager',
+      accountStatus: 'active',
+      isEmailVerified: true,
+      eligibility: {
+        status: 'verified',
+        score: 100,
+        categories: [],
+        lastVerificationDate: '2024-01-01T00:00:00Z'
+      },
+      createdAt: '2024-01-02T08:00:00Z',
+      updatedAt: '2024-01-05T10:00:00Z'
+    },
+    {
+      _id: '4',
+      name: 'Emily Rodriguez',
+      email: 'emily.rodriguez@example.com',
+      phoneNumber: '+1234567893',
+      role: 'user',
+      accountStatus: 'pending_verification',
+      isEmailVerified: false,
+      eligibility: {
+        status: 'pending',
+        score: 0,
+        categories: [],
+      },
+      createdAt: '2024-01-20T08:00:00Z',
+      updatedAt: '2024-01-20T08:00:00Z'
+    },
+    {
+      _id: '5',
+      name: 'David Kim',
+      email: 'david.kim@example.com',
+      phoneNumber: '+1234567894',
+      role: 'user',
+      accountStatus: 'suspended',
+      isEmailVerified: true,
+      eligibility: {
+        status: 'rejected',
+        score: 25,
+        categories: [],
+        lastVerificationDate: '2024-01-18T10:00:00Z'
+      },
+      createdAt: '2024-01-12T08:00:00Z',
+      updatedAt: '2024-01-18T10:00:00Z'
+    }
+  ];
+
   const fetchUsers = async (page: number = 1) => {
     if (!isAdmin) {
       setError('Access denied. Admin privileges required.');
@@ -119,19 +183,60 @@ const UserTable: React.FC<UserTableProps> = ({
     setError(null);
 
     try {
-      // REAL API CALL - Replace mock data
-      const response = await userService.getAll({
-        page,
-        limit: itemsPerPage,
-        role: localFilters.role as any,
-        accountStatus: localFilters.accountStatus as any,
-        search: localFilters.search,
-        sortBy: mapSortKey(sortConfig.key),
-        sortOrder: sortConfig.direction
-      });
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      setUsers(response.users);
-      setPagination(response.pagination);
+      // Apply filters
+      let filteredUsers = [...mockUsers];
+      
+      if (localFilters.search) {
+        const searchTerm = localFilters.search.toLowerCase();
+        filteredUsers = filteredUsers.filter(user =>
+          user.name.toLowerCase().includes(searchTerm) ||
+          user.email.toLowerCase().includes(searchTerm) ||
+          user.phoneNumber.includes(searchTerm)
+        );
+      }
+      
+      if (localFilters.role) {
+        filteredUsers = filteredUsers.filter(user => user.role === localFilters.role);
+      }
+      
+      if (localFilters.accountStatus) {
+        filteredUsers = filteredUsers.filter(user => user.accountStatus === localFilters.accountStatus);
+      }
+      
+      if (localFilters.isEmailVerified !== undefined) {
+        filteredUsers = filteredUsers.filter(user => user.isEmailVerified === localFilters.isEmailVerified);
+      }
+
+      // Apply sorting
+      filteredUsers.sort((a, b) => {
+        let aValue: any = sortConfig.key === 'createdAt' ? a.createdAt : a[sortConfig.key];
+        let bValue: any = sortConfig.key === 'createdAt' ? b.createdAt : b[sortConfig.key];
+        
+        if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+        if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+        
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+
+      // Apply pagination
+      const totalCount = filteredUsers.length;
+      const totalPages = Math.ceil(totalCount / itemsPerPage);
+      const startIndex = (page - 1) * itemsPerPage;
+      const paginatedUsers = filteredUsers.slice(startIndex, startIndex + itemsPerPage);
+      
+      setUsers(paginatedUsers);
+      setPagination({
+        currentPage: page,
+        totalPages,
+        totalCount,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      });
       
     } catch (err: any) {
       console.error('Error fetching users:', err);
@@ -247,20 +352,20 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   const getEligibilityBadge = (eligibility: User['eligibility']) => {
-  const statusConfig = {
-    verified: { label: 'Verified', bgColor: 'bg-green-100', textColor: 'text-green-800' },
-    pending: { label: 'Pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
-    rejected: { label: 'Rejected', bgColor: 'bg-red-100', textColor: 'text-red-800' },
-    requires_update: { label: 'Update Required', bgColor: 'bg-orange-100', textColor: 'text-orange-800' }
-  };
+    const statusConfig = {
+      verified: { label: 'Verified', bgColor: 'bg-green-100', textColor: 'text-green-800' },
+      pending: { label: 'Pending', bgColor: 'bg-yellow-100', textColor: 'text-yellow-800' },
+      rejected: { label: 'Rejected', bgColor: 'bg-red-100', textColor: 'text-red-800' },
+      requires_update: { label: 'Update Required', bgColor: 'bg-orange-100', textColor: 'text-orange-800' }
+    };
 
-  const config = statusConfig[eligibility.status as keyof typeof statusConfig] || statusConfig.pending;
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config.bgColor} ${config.textColor}`}>
-      {config.label} ({eligibility.score || 0}/100)
-    </span>
-  );
-};
+    const config = statusConfig[eligibility.status as keyof typeof statusConfig] || statusConfig.pending;
+    return (
+      <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${config.bgColor} ${config.textColor}`}>
+        {config.label} ({eligibility.score}/100)
+      </span>
+    );
+  };
 
   const SortIcon = ({ column }: { column: keyof User | 'createdAt' }) => {
     if (sortConfig.key !== column) {

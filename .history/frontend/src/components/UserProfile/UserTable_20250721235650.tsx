@@ -25,24 +25,14 @@ import {
 import userService from '../../services/userService';
 
 const mapSortKey = (key: keyof User | 'createdAt'): 'name' | 'email' | 'createdAt' | 'lastActivity' | 'eligibilityScore' => {
-  const sortMapping: Record<string, 'name' | 'email' | 'createdAt' | 'lastActivity' | 'eligibilityScore'> = {
-    'name': 'name',
-    'email': 'email',
-    'createdAt': 'createdAt',
-    'role': 'name',  // Backend doesn't support role sort, fallback to name
-    'accountStatus': 'name',  // Backend doesn't support status sort, fallback to name
-    'isEmailVerified': 'name',  // ← ADD THIS
-    'phoneNumber': 'name',  // ← ADD THIS
-    'eligibility': 'eligibilityScore',  // ← ADD THIS
-    'updatedAt': 'createdAt',  // ← ADD THIS
-    '_id': 'name',  // ← ADD THIS
-    'personalInfo': 'name',  // ← ADD THIS
-    'economicInfo': 'name',  // ← ADD THIS
-    'preferences': 'name',  // ← ADD THIS
-    'statistics': 'name',  // ← ADD THIS
-    'documents': 'name'  // ← ADD THIS
+  const sortMapping = {
+    'name': 'name' as const,
+    'email': 'email' as const,
+    'createdAt': 'createdAt' as const,
+    'role': 'name' as const,  // Backend doesn't support role sort, fallback to name
+    'accountStatus': 'name' as const,  // Backend doesn't support status sort, fallback to name
   };
-  return sortMapping[key as string] || 'createdAt';
+  return sortMapping[key] || 'createdAt';
 };
 
 interface UserTableProps {
