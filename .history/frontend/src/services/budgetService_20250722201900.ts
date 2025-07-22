@@ -508,6 +508,5 @@ const budgetService = {
     };
     return statusColors[status] || 'bg-gray-100 text-gray-800';
   }
-};
 
 export default budgetService;

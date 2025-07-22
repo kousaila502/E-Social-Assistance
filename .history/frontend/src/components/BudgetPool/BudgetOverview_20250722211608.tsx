@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import budgetService from '../../services/budgetService';
-import { useNavigate } from 'react-router-dom';
 import {
   DollarSign,
   TrendingUp,
@@ -13,7 +12,6 @@ import {
   Activity,
   Clock
 } from 'lucide-react';
-import { BudgetPoolStatsResponse } from '../../config/apiConfig';
 
 const BudgetOverview: React.FC = () => {
 
@@ -41,8 +39,6 @@ const BudgetOverview: React.FC = () => {
     }>;
   }
 
-  const navigate = useNavigate();
-
   const { user, hasAnyRole } = useAuth();
   const [stats, setStats] = useState<BudgetDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,67 +51,27 @@ const BudgetOverview: React.FC = () => {
 
   useEffect(() => {
     if (!canViewBudgets) {
-      navigate('/dashboard');
+      setLoading(false);
       return;
     }
 
     const fetchBudgetStats = async () => {
       try {
         setLoading(true);
-        const data: BudgetPoolStatsResponse = await budgetService.getDashboardStats();
-
-        // Transform API response to match your component's expectations with safe fallbacks
-        const transformedStats: BudgetDashboardStats = {
-          statistics: {
-            totalBudgetPools: data.statistics?.overall?.totalPools || 0,
-            activePools: data.statistics?.overall?.totalPools || 0, // Or calculate active pools differently
-            totalAllocated: data.statistics?.overall?.totalAllocated || 0,
-            totalSpent: data.statistics?.overall?.totalSpent || 0,
-            averageUtilization: data.statistics?.overall?.avgUtilization || 0,
-            poolsNearDepletion: (data.statistics?.alerts?.lowBalancePools || 0) + (data.statistics?.alerts?.criticalBalancePools || 0),
-            poolsExpiring: data.statistics?.alerts?.expiringPools || 0,
-            departmentBreakdown: (data.statistics?.byDepartment || []).map(dept => ({
-              department: dept._id || 'Unknown',
-              totalAmount: dept.totalAmount || 0,
-              spentAmount: (dept.totalAmount || 0) * 0.7, // You'll need actual spent calculation
-              utilizationRate: 70 // You'll need actual utilization calculation
-            }))
-          },
-          recentActivity: (data.statistics?.recentActivity || []).map(pool => ({
-            type: 'Budget Update',
-            poolName: pool.name || 'Unknown Pool',
-            timestamp: pool.updatedAt || new Date().toISOString(),
-            amount: pool.totalAmount || 0
-          }))
-        };
-
-        setStats(transformedStats);
+        const data = await budgetService.getDashboardStats();
+        setStats(data);
         setError(null);
       } catch (err: any) {
         console.error('Error fetching budget stats:', err);
         setError(err?.message || 'Failed to load budget statistics');
-
-        // Set default stats on error to prevent crashes
-        setStats({
-          statistics: {
-            totalBudgetPools: 0,
-            activePools: 0,
-            totalAllocated: 0,
-            totalSpent: 0,
-            averageUtilization: 0,
-            poolsNearDepletion: 0,
-            poolsExpiring: 0,
-            departmentBreakdown: []
-          },
-          recentActivity: []
-        });
       } finally {
         setLoading(false);
       }
     };
 
     fetchBudgetStats();
-  }, [canViewBudgets, navigate]);
+  }, [canViewBudgets]);
+
   // Format currency for display
   const formatCurrency = (amount: number): string => {
     return new Intl.NumberFormat('en-US', {

@@ -11,7 +11,7 @@ import RegisterPage from './pages/RegisterPage';
 
 // Main Pages
 import DashboardPage from './pages/DashboardPage';
-import BudgetManagement from './pages/BudgetPoolManagementPage';
+import BudgetManagement from './pages/';
 import RequestSubmission from './pages/RequestSubmission';
 import RequestManagementPage from './pages/RequestManagementPage';
 import UserManagementPage from './pages/UserManagementPage';
@@ -52,7 +52,9 @@ function App() {
 
             <Route path="/admin/budget" element={
               <ProtectedRoute>
+                <MainLayout>
                   <BudgetManagement />
+                </MainLayout>
               </ProtectedRoute>
             } />
 

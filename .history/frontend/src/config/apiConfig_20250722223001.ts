@@ -77,6 +77,20 @@ export const API_CONFIG = {
     },
 
     // =====================================================
+    // PAYMENT ENDPOINTS (LEGACY - UNCHANGED)
+    // =====================================================
+    PAYMENTS: {
+      GET_ALL: '/payments',
+      CREATE: '/payments',
+      DASHBOARD_STATS: '/payments/dashboard-stats',
+      GET_BY_ID: (id: string) => `/payments/${id}`,
+      UPDATE: (id: string) => `/payments/${id}`,
+      PROCESS: (id: string) => `/payments/${id}/process`,
+      CANCEL: (id: string) => `/payments/${id}/cancel`,
+      RETRY: (id: string) => `/payments/${id}/retry`
+    },
+
+    // =====================================================
     // BUDGET POOL ENDPOINTS (LEGACY - UNCHANGED)
     // =====================================================
     BUDGET_POOLS: {

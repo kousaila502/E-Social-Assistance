@@ -77,6 +77,20 @@ export const API_CONFIG = {
     },
 
     // =====================================================
+    // PAYMENT ENDPOINTS (LEGACY - UNCHANGED)
+    // =====================================================
+    PAYMENTS: {
+      GET_ALL: '/payments',
+      CREATE: '/payments',
+      DASHBOARD_STATS: '/payments/dashboard-stats',
+      GET_BY_ID: (id: string) => `/payments/${id}`,
+      UPDATE: (id: string) => `/payments/${id}`,
+      PROCESS: (id: string) => `/payments/${id}/process`,
+      CANCEL: (id: string) => `/payments/${id}/cancel`,
+      RETRY: (id: string) => `/payments/${id}/retry`
+    },
+
+    // =====================================================
     // BUDGET POOL ENDPOINTS (LEGACY - UNCHANGED)
     // =====================================================
     BUDGET_POOLS: {
@@ -140,32 +154,9 @@ export const API_CONFIG = {
       PUBLISH: (id: string) => `/announcements/${id}/publish`,
       APPLY: (id: string) => `/announcements/${id}/apply`,
       REVIEW_PARTICIPANT: (id: string, userId: string) => `/announcements/${id}/participants/${userId}/review`
-    },
-
-
-    // =====================================================
-    // PAYMENT ENDPOINTS (UPDATED TO MATCH BACKEND)
-    // =====================================================
-    PAYMENTS: {
-      // Core CRUD operations
-      GET_ALL: '/payments',
-      CREATE: '/payments',
-      GET_BY_ID: (id: string) => `/payments/${id}`,
-      UPDATE: (id: string) => `/payments/${id}`,
-      
-      // Statistics and analytics
-      DASHBOARD_STATS: '/payments/dashboard-stats',
-      
-      // Payment workflow actions
-      PROCESS: (id: string) => `/payments/${id}/process`,
-      CANCEL: (id: string) => `/payments/${id}/cancel`,
-      RETRY: (id: string) => `/payments/${id}/retry`
-    },
-
+    }
   }
 };
-
-
 
 // =====================================================
 // CORE INTERFACES (LEGACY - PRESERVE AS-IS)
@@ -294,6 +285,24 @@ export interface Announcement {
   updatedAt: string;
 }
 
+// =====================================================
+    // PAYMENT ENDPOINTS (UPDATED TO MATCH BACKEND)
+    // =====================================================
+    PAYMENTS: {
+      // Core CRUD operations
+      GET_ALL: '/payments',
+      CREATE: '/payments',
+      GET_BY_ID: (id: string) => `/payments/${id}`,
+      UPDATE: (id: string) => `/payments/${id}`,
+      
+      // Statistics and analytics
+      DASHBOARD_STATS: '/payments/dashboard-stats',
+      
+      // Payment workflow actions
+      PROCESS: (id: string) => `/payments/${id}/process`,
+      CANCEL: (id: string) => `/payments/${id}/cancel`,
+      RETRY: (id: string) => `/payments/${id}/retry`
+    },
 
 
 // =====================================================

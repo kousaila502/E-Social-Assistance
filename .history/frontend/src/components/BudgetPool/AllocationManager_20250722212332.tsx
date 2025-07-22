@@ -130,11 +130,11 @@ const AllocationManager: React.FC = () => {
       setAllocating(true);
       setError(null);
 
-      // Use the correct method name: allocateFunds (not allocate)
-      await budgetService.allocateFunds(allocationForm.budgetPoolId, {
+      // Use the correct method name from budgetService
+      await budgetService.allocate(allocationForm.budgetPoolId, {
         demandeId: allocationForm.demandeId,
         amount: allocationForm.amount,
-        notes: allocationForm.notes || undefined // Make notes optional
+        notes: allocationForm.notes
       });
 
       setSuccess('Funds allocated successfully');

@@ -52,7 +52,9 @@ function App() {
 
             <Route path="/admin/budget" element={
               <ProtectedRoute>
+                <MainLayout>
                   <BudgetManagement />
+                
               </ProtectedRoute>
             } />
 

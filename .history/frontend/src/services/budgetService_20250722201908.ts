@@ -1,5 +1,5 @@
 // src/services/budgetService.ts - UPDATED TO MATCH BACKEND API
-import api, {
+import api, { 
   API_CONFIG,
   BudgetPool,
   CreateBudgetPoolData,
@@ -29,11 +29,11 @@ const budgetService = {
   getAll: async (filters: BudgetPoolFilters = {}): Promise<BudgetPoolsResponse> => {
     try {
       const params = new URLSearchParams();
-
+      
       // Pagination
       if (filters.page) params.append('page', filters.page.toString());
       if (filters.limit) params.append('limit', filters.limit.toString());
-
+      
       // Status and basic filters
       if (filters.status) params.append('status', filters.status);
       if (filters.fiscalYear) params.append('fiscalYear', filters.fiscalYear.toString());
@@ -42,21 +42,21 @@ const budgetService = {
       if (filters.programType) params.append('programType', filters.programType);
       if (filters.fundingSource) params.append('fundingSource', filters.fundingSource);
       if (filters.search) params.append('search', filters.search);
-
+      
       // Sorting
       if (filters.sortBy) params.append('sortBy', filters.sortBy);
       if (filters.sortOrder) params.append('sortOrder', filters.sortOrder);
-
+      
       // Amount filters
       if (filters.minAmount) params.append('minAmount', filters.minAmount.toString());
       if (filters.maxAmount) params.append('maxAmount', filters.maxAmount.toString());
-
+      
       // Date filters
       if (filters.startDateFrom) params.append('startDateFrom', filters.startDateFrom);
       if (filters.startDateTo) params.append('startDateTo', filters.startDateTo);
       if (filters.endDateFrom) params.append('endDateFrom', filters.endDateFrom);
       if (filters.endDateTo) params.append('endDateTo', filters.endDateTo);
-
+      
       // Utilization filters
       if (filters.utilizationMin) params.append('utilizationMin', filters.utilizationMin.toString());
       if (filters.utilizationMax) params.append('utilizationMax', filters.utilizationMax.toString());
@@ -320,8 +320,8 @@ const budgetService = {
   /**
    * Check if pool has sufficient funds for allocation
    */
-  checkAvailableFunds: async (poolId: string, amount: number): Promise<{
-    canAllocate: boolean;
+  checkAvailableFunds: async (poolId: string, amount: number): Promise<{ 
+    canAllocate: boolean; 
     availableAmount: number;
     pool: BudgetPool;
   }> => {
@@ -329,7 +329,7 @@ const budgetService = {
       const poolResponse = await budgetService.getById(poolId);
       const pool = poolResponse.budgetPool;
       const availableAmount = pool.availableAmount || 0;
-
+      
       return {
         canAllocate: availableAmount >= amount,
         availableAmount,
@@ -349,7 +349,7 @@ const budgetService = {
       const response = await budgetService.getAll({ status: 'active', limit: 100 });
       const currentDate = new Date();
       const thresholdDate = new Date(currentDate.getTime() + (days * 24 * 60 * 60 * 1000));
-
+      
       return response.budgetPools.filter(pool => {
         const endDate = new Date(pool.budgetPeriod.endDate);
         return endDate <= thresholdDate && endDate > currentDate;
@@ -366,7 +366,7 @@ const budgetService = {
   getLowBalancePools: async (thresholdPercentage: number = 20): Promise<BudgetPool[]> => {
     try {
       const response = await budgetService.getAll({ status: 'active', limit: 100 });
-
+      
       return response.budgetPools.filter(pool => {
         const availableAmount = pool.availableAmount || 0;
         const balancePercentage = (availableAmount / pool.totalAmount) * 100;
@@ -384,7 +384,7 @@ const budgetService = {
   getCriticalBalancePools: async (thresholdPercentage: number = 5): Promise<BudgetPool[]> => {
     try {
       const response = await budgetService.getAll({ status: 'active', limit: 100 });
-
+      
       return response.budgetPools.filter(pool => {
         const availableAmount = pool.availableAmount || 0;
         const balancePercentage = (availableAmount / pool.totalAmount) * 100;
@@ -498,7 +498,7 @@ const budgetService = {
   /**
    * Get allocation status color
    */
-  getAllocationStatusColor: (status: string): string => {
+ getAllocationStatusColor: (status: string): string => {
     const statusColors: Record<string, string> = {
       reserved: 'bg-yellow-100 text-yellow-800',
       confirmed: 'bg-blue-100 text-blue-800',

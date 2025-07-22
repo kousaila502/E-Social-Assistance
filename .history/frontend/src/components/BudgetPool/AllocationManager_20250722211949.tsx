@@ -1,9 +1,9 @@
 // src/components/BudgetPool/AllocationManager.tsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import budgetService from '../../services/budgetService';
+import budgetService, { BudgetPool } from '../../services/budgetService';
 import requestService from '../../services/requestService';
-import { Demande, BudgetPool } from '../../config/apiConfig';
+import { Demande } from '../../config/apiConfig';
 import { 
   DollarSign, 
   ArrowRight, 
@@ -59,13 +59,12 @@ const AllocationManager: React.FC = () => {
       try {
         setLoading(true);
         const [requestsData, poolsData] = await Promise.all([
-          requestService.getAll({ status: 'approved' }),
-          budgetService.getAll({ status: 'active' })
+          requestService.getByStatus('approved'),
+          budgetService.getActivePools()
         ]);
 
-        // Handle different response structures
-        setApprovedRequests(requestsData.demandes || requestsData || []);
-        setBudgetPools(poolsData.budgetPools || poolsData || []);
+        setApprovedRequests(requestsData.demandes || []);
+        setBudgetPools(poolsData);
         setError(null);
       } catch (err: any) {
         console.error('Error fetching data:', err);
@@ -86,14 +85,6 @@ const AllocationManager: React.FC = () => {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(amount);
-  };
-
-  // Get applicant name safely
-  const getApplicantName = (applicant: any): string => {
-    if (typeof applicant === 'string') {
-      return 'Unknown';
-    }
-    return applicant?.name || 'Unknown';
   };
 
   // Handle request selection
@@ -130,11 +121,10 @@ const AllocationManager: React.FC = () => {
       setAllocating(true);
       setError(null);
 
-      // Use the correct method name: allocateFunds (not allocate)
       await budgetService.allocateFunds(allocationForm.budgetPoolId, {
         demandeId: allocationForm.demandeId,
         amount: allocationForm.amount,
-        notes: allocationForm.notes || undefined // Make notes optional
+        notes: allocationForm.notes
       });
 
       setSuccess('Funds allocated successfully');
@@ -150,12 +140,12 @@ const AllocationManager: React.FC = () => {
 
       // Refresh data
       const [requestsData, poolsData] = await Promise.all([
-        requestService.getAll({ status: 'approved' }),
-        budgetService.getAll({ status: 'active' })
+        requestService.getByStatus('approved'),
+        budgetService.getActivePools()
       ]);
 
-      setApprovedRequests(requestsData.demandes || requestsData || []);
-      setBudgetPools(poolsData.budgetPools || poolsData || []);
+      setApprovedRequests(requestsData.demandes || []);
+      setBudgetPools(poolsData);
 
     } catch (err: any) {
       console.error('Error allocating funds:', err);
@@ -167,9 +157,8 @@ const AllocationManager: React.FC = () => {
 
   // Filter requests
   const filteredRequests = approvedRequests.filter(request => {
-    const applicantName = getApplicantName(request.applicant);
     const matchesSearch = request.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         applicantName.toLowerCase().includes(searchTerm.toLowerCase());
+                         request.applicant.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !categoryFilter || request.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
@@ -262,14 +251,11 @@ const AllocationManager: React.FC = () => {
                 className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">All Categories</option>
-                <option value="emergency_assistance">Emergency Assistance</option>
-                <option value="educational_support">Educational Support</option>
-                <option value="medical_assistance">Medical Assistance</option>
-                <option value="housing_support">Housing Support</option>
-                <option value="food_assistance">Food Assistance</option>
-                <option value="employment_support">Employment Support</option>
-                <option value="elderly_care">Elderly Care</option>
-                <option value="disability_support">Disability Support</option>
+                <option value="medical">Medical</option>
+                <option value="education">Education</option>
+                <option value="housing">Housing</option>
+                <option value="food">Food</option>
+                <option value="employment">Employment</option>
                 <option value="other">Other</option>
               </select>
             </div>
@@ -296,7 +282,7 @@ const AllocationManager: React.FC = () => {
                     <div>
                       <h4 className="font-medium text-gray-900">{request.title}</h4>
                       <p className="text-sm text-gray-600">
-                        by {getApplicantName(request.applicant)}
+                        by {request.applicant.name}
                       </p>
                       <div className="flex items-center space-x-4 mt-2">
                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -316,11 +302,9 @@ const AllocationManager: React.FC = () => {
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                           request.urgencyLevel === 'critical' 
                             ? 'bg-red-100 text-red-800'
-                            : request.urgencyLevel === 'urgent'
+                            : request.urgencyLevel === 'high'
                             ? 'bg-orange-100 text-orange-800'
-                            : request.urgencyLevel === 'important'
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-gray-100 text-gray-800'
+                            : 'bg-yellow-100 text-yellow-800'
                         }`}>
                           {request.urgencyLevel}
                         </span>
@@ -372,7 +356,7 @@ const AllocationManager: React.FC = () => {
                   <option value="">Choose budget pool...</option>
                   {budgetPools.map((pool) => (
                     <option key={pool._id} value={pool._id}>
-                      {pool.name} - Available: {formatCurrency(pool.availableAmount || 0)}
+                      {pool.name} - Available: {formatCurrency(pool.availableAmount)}
                     </option>
                   ))}
                 </select>
@@ -396,9 +380,9 @@ const AllocationManager: React.FC = () => {
                     required
                   />
                 </div>
-                {selectedBudgetPool && allocationForm.amount > (selectedBudgetPool.availableAmount || 0) && (
+                {selectedBudgetPool && allocationForm.amount > selectedBudgetPool.availableAmount && (
                   <p className="mt-1 text-sm text-red-600">
-                    Amount exceeds available budget ({formatCurrency(selectedBudgetPool.availableAmount || 0)})
+                    Amount exceeds available budget ({formatCurrency(selectedBudgetPool.availableAmount)})
                   </p>
                 )}
               </div>
@@ -428,7 +412,7 @@ const AllocationManager: React.FC = () => {
                     </div>
                     <div>
                       <span className="text-blue-600">Available:</span>
-                      <span className="ml-2 font-medium">{formatCurrency(selectedBudgetPool.availableAmount || 0)}</span>
+                      <span className="ml-2 font-medium">{formatCurrency(selectedBudgetPool.availableAmount)}</span>
                     </div>
                     <div>
                       <span className="text-blue-600">Allocated:</span>
@@ -436,7 +420,7 @@ const AllocationManager: React.FC = () => {
                     </div>
                     <div>
                       <span className="text-blue-600">Utilization:</span>
-                      <span className="ml-2 font-medium">{(selectedBudgetPool.utilizationRate || 0).toFixed(1)}%</span>
+                      <span className="ml-2 font-medium">{selectedBudgetPool.utilizationRate.toFixed(1)}%</span>
                     </div>
                   </div>
                 </div>
@@ -445,7 +429,7 @@ const AllocationManager: React.FC = () => {
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={allocating || !selectedBudgetPool || allocationForm.amount > (selectedBudgetPool?.availableAmount || 0)}
+                disabled={allocating || !selectedBudgetPool || allocationForm.amount > selectedBudgetPool.availableAmount}
                 className="w-full flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {allocating ? (

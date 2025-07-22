@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import budgetService from '../../services/budgetService';
-import { useNavigate } from 'react-router-dom';
 import {
   DollarSign,
   TrendingUp,

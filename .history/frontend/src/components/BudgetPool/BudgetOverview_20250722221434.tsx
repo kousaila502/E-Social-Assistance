@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import budgetService from '../../services/budgetService';
-import { useNavigate } from 'react-router-dom';
 import {
   DollarSign,
   TrendingUp,
@@ -40,8 +39,6 @@ const BudgetOverview: React.FC = () => {
       amount: number;
     }>;
   }
-
-  const navigate = useNavigate();
 
   const { user, hasAnyRole } = useAuth();
   const [stats, setStats] = useState<BudgetDashboardStats | null>(null);

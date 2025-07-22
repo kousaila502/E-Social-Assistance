@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import budgetService from '../../services/budgetService';
-import { useNavigate } from 'react-router-dom';
 import {
   DollarSign,
   TrendingUp,
@@ -41,8 +40,6 @@ const BudgetOverview: React.FC = () => {
     }>;
   }
 
-  const navigate = useNavigate();
-
   const { user, hasAnyRole } = useAuth();
   const [stats, setStats] = useState<BudgetDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,7 +50,7 @@ const BudgetOverview: React.FC = () => {
 
 
 
-  useEffect(() => {
+   useEffect(() => {
     if (!canViewBudgets) {
       navigate('/dashboard');
       return;
@@ -94,7 +91,7 @@ const BudgetOverview: React.FC = () => {
       } catch (err: any) {
         console.error('Error fetching budget stats:', err);
         setError(err?.message || 'Failed to load budget statistics');
-
+        
         // Set default stats on error to prevent crashes
         setStats({
           statistics: {
