@@ -39,6 +39,8 @@ import PaymentDetailModal from '../components/Payment/PaymentDetail';
 
 type ViewMode = 'table' | 'details' | 'stats';
 
+
+
 const PaymentManagementPage: React.FC = () => {
     const navigate = useNavigate();
     const { hasRole, user: currentUser } = useAuth();

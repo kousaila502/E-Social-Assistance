@@ -39,6 +39,18 @@ import PaymentDetailModal from '../components/Payment/PaymentDetail';
 
 type ViewMode = 'table' | 'details' | 'stats';
 
+interface PaymentStats {
+    totalPayments: number;
+    totalAmount: number;
+    completedPayments: number;
+    pendingPayments: number;
+    failedPayments: number;
+    avgAmount: number;
+    totalFees: number;
+    methodBreakdown: MethodBreakdown[];
+    recentPayments: RecentPayment[];
+}
+
 const PaymentManagementPage: React.FC = () => {
     const navigate = useNavigate();
     const { hasRole, user: currentUser } = useAuth();

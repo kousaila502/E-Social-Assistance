@@ -50,13 +50,14 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
     const [showCancelForm, setShowCancelForm] = useState(false);
     const [processData, setProcessData] = useState<ProcessPaymentData>({
         transactionId: '',
-        completionNotes: '' // Use 'completionNotes' instead of 'internalNotes'
-        // Remove 'completedAt' as it's not part of the interface
+        completedAt: new Date().toISOString(),
+        internalNotes: ''
     });
     const [cancelData, setCancelData] = useState<CancelPaymentData>({
-        reason: ''
-        // Remove 'internalNotes' as it's not part of the interface
+        reason: '',
+        internalNotes: ''
     });
+
     if (!isOpen || !payment) return null;
 
     // Helper functions
@@ -111,7 +112,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
 
     const getRecipientName = () => {
         if (typeof payment.recipient === 'object' && payment.recipient !== null) {
-            return payment.recipient.name; // Use the 'name' property from the User interface
+            return ;
         }
         return 'Unknown Recipient';
     };
@@ -231,7 +232,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                             </div>
                                         </div>
                                     </div>
-
+                                    
                                     <div className="flex items-center space-x-2">
                                         {/* Action Buttons */}
                                         {canManage && (
@@ -246,7 +247,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                         Process
                                                     </button>
                                                 )}
-
+                                                
                                                 {paymentService.canCancel(payment) && (
                                                     <button
                                                         onClick={() => setShowCancelForm(true)}
@@ -257,7 +258,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                         Cancel
                                                     </button>
                                                 )}
-
+                                                
                                                 {paymentService.canRetry(payment) && (
                                                     <button
                                                         onClick={handleRetry}
@@ -272,7 +273,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                         Retry
                                                     </button>
                                                 )}
-
+                                                
                                                 {onEdit && (
                                                     <button
                                                         onClick={() => onEdit(payment)}
@@ -285,7 +286,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                 )}
                                             </>
                                         )}
-
+                                        
                                         <button
                                             onClick={onClose}
                                             className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -363,7 +364,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                             {(payment.bankDetails || payment.checkDetails) && (
                                                 <div className="bg-white border border-gray-200 rounded-lg p-4">
                                                     <h4 className="text-lg font-medium text-gray-900 mb-4">Payment Details</h4>
-
+                                                    
                                                     {payment.bankDetails && payment.paymentMethod === 'bank_transfer' && (
                                                         <div className="space-y-3">
                                                             <div className="grid grid-cols-2 gap-4">
@@ -523,7 +524,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                             <p className="text-sm text-gray-900">{formatDate(payment.createdAt)}</p>
                                                         </div>
                                                     </div>
-
+                                                    
                                                     {payment.scheduledDate && (
                                                         <div className="flex items-center space-x-3">
                                                             <ClockIcon className="h-5 w-5 text-gray-400" />
@@ -538,7 +539,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                             </div>
                                                         </div>
                                                     )}
-
+                                                    
                                                     {payment.processedAt && (
                                                         <div className="flex items-center space-x-3">
                                                             <PlayIcon className="h-5 w-5 text-gray-400" />
@@ -548,7 +549,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                             </div>
                                                         </div>
                                                     )}
-
+                                                    
                                                     {payment.completedAt && (
                                                         <div className="flex items-center space-x-3">
                                                             <CheckCircleIcon className="h-5 w-5 text-green-500" />
@@ -621,7 +622,7 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                 </label>
                                                 <input
                                                     type="text"
-                                                    value={processData.transactionId || ''}
+                                                    value={processData.transactionId}
                                                     onChange={(e) => setProcessData(prev => ({ ...prev, transactionId: e.target.value }))}
                                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                                     placeholder="Enter transaction ID"
@@ -630,11 +631,11 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                             </div>
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                    Completion Notes (Optional)
+                                                    Internal Notes
                                                 </label>
                                                 <textarea
-                                                    value={processData.completionNotes || ''}
-                                                    onChange={(e) => setProcessData(prev => ({ ...prev, completionNotes: e.target.value }))}
+                                                    value={processData.internalNotes || ''}
+                                                    onChange={(e) => setProcessData(prev => ({ ...prev, internalNotes: e.target.value }))}
                                                     rows={3}
                                                     className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                                                     placeholder="Add processing notes..."
@@ -684,7 +685,18 @@ const PaymentDetailModal: React.FC<PaymentDetailModalProps> = ({
                                                     <option value="other">Other</option>
                                                 </select>
                                             </div>
-                                            {/* Removed Internal Notes section since it's not part of CancelPaymentData interface */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    Internal Notes
+                                                </label>
+                                                <textarea
+                                                    value={cancelData.internalNotes || ''}
+                                                    onChange={(e) => setCancelData(prev => ({ ...prev, internalNotes: e.target.value }))}
+                                                    rows={3}
+                                                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                                    placeholder="Add cancellation notes..."
+                                                />
+                                            </div>
                                             <div className="flex justify-end space-x-3">
                                                 <button
                                                     onClick={() => setShowCancelForm(false)}

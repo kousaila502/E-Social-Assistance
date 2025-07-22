@@ -21,7 +21,6 @@ import AnnouncementManagementPage from './pages/AnnouncementManagementPage';
 
 
 import './index.css';
-import PaymentManagementPage from './pages/paymentManagementPage';
 
 
 function App() {
@@ -77,7 +76,7 @@ function App() {
 
             <Route path="/admin/payments" element={
               <ProtectedRoute>
-                <PaymentManagementPage />
+                <AnnouncementManagementPage />
               </ProtectedRoute>
             } />
 

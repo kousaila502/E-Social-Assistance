@@ -3,15 +3,17 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import MainLayout from '../components/layout/MainLayout';
 import { useAuth } from '../hooks/useAuth';
-import CreatePaymentModal from '../components/Payment/paymentModal';
+import CreatePaymentModal from '../compo';
+import PaymentDetailModal from '../components/Payment/paymentDetail';
 import ProcessPaymentModal from '../components/Payment/ProcessPayment';
 
 import paymentService, {
     Payment,
     PaymentFilters,
+    PaymentStatsResponse,
+    PaymentStatistics,
     MethodBreakdown,
-    RecentPayment,
-    PaymentStatsResponse
+    RecentPayment
 } from '../services/paymentService';
 
 import {
@@ -35,9 +37,20 @@ import {
     PlayIcon,
     StopIcon
 } from '@heroicons/react/24/outline';
-import PaymentDetailModal from '../components/Payment/PaymentDetail';
 
 type ViewMode = 'table' | 'details' | 'stats';
+
+interface PaymentStats {
+    totalPayments: number;
+    totalAmount: number;
+    completedPayments: number;
+    pendingPayments: number;
+    failedPayments: number;
+    avgAmount: number;
+    totalFees: number;
+    methodBreakdown: MethodBreakdown[];
+    recentPayments: RecentPayment[];
+}
 
 const PaymentManagementPage: React.FC = () => {
     const navigate = useNavigate();
@@ -48,7 +61,7 @@ const PaymentManagementPage: React.FC = () => {
     const [viewMode, setViewMode] = useState<ViewMode>('table');
     const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
     const [payments, setPayments] = useState<Payment[]>([]);
-    const [stats, setStats] = useState<PaymentStatsResponse | null>(null);
+    const [stats, setStats] = useState<PaymentStats | null>(null);
     const [refreshTrigger, setRefreshTrigger] = useState(0);
     const [loading, setLoading] = useState(true);
     const [statsLoading, setStatsLoading] = useState(true);
@@ -116,7 +129,17 @@ const PaymentManagementPage: React.FC = () => {
         try {
             setStatsLoading(true);
             const response = await paymentService.getStats();
-            setStats(response); // Use the response directly instead of mapping
+            setStats({
+                totalPayments: response.statistics.totalPayments,
+                totalAmount: response.statistics.totalAmount,
+                completedPayments: response.statistics.completedPayments,
+                pendingPayments: response.statistics.pendingPayments,
+                failedPayments: response.statistics.failedPayments,
+                avgAmount: response.statistics.avgAmount,
+                totalFees: response.statistics.totalFees,
+                methodBreakdown: response.methodBreakdown,
+                recentPayments: response.recentPayments
+            });
         } catch (error: any) {
             console.error('Error fetching payment stats:', error);
             toast.error('Failed to load payment statistics');
@@ -271,7 +294,7 @@ const PaymentManagementPage: React.FC = () => {
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 truncate">Total Payments</dt>
-                                    <dd className="text-lg font-medium text-gray-900">{stats?.statistics.totalPayments || 0}</dd>
+                                    <dd className="text-lg font-medium text-gray-900">{stats?.totalPayments || 0}</dd>
                                 </dl>
                             </div>
                         </div>
@@ -288,7 +311,7 @@ const PaymentManagementPage: React.FC = () => {
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 truncate">Total Amount</dt>
                                     <dd className="text-lg font-medium text-gray-900">
-                                        {paymentService.formatAmount(stats?.statistics.totalAmount || 0)}
+                                        {paymentService.formatAmount(stats?.totalAmount || 0)}
                                     </dd>
                                 </dl>
                             </div>
@@ -305,7 +328,7 @@ const PaymentManagementPage: React.FC = () => {
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 truncate">Completed</dt>
-                                    <dd className="text-lg font-medium text-gray-900">{stats?.statistics.completedPayments || 0}</dd>
+                                    <dd className="text-lg font-medium text-gray-900">{stats?.completedPayments || 0}</dd>
                                 </dl>
                             </div>
                         </div>
@@ -321,7 +344,7 @@ const PaymentManagementPage: React.FC = () => {
                             <div className="ml-5 w-0 flex-1">
                                 <dl>
                                     <dt className="text-sm font-medium text-gray-500 truncate">Pending</dt>
-                                    <dd className="text-lg font-medium text-gray-900">{stats?.statistics.pendingPayments || 0}</dd>
+                                    <dd className="text-lg font-medium text-gray-900">{stats?.pendingPayments || 0}</dd>
                                 </dl>
                             </div>
                         </div>
@@ -329,7 +352,6 @@ const PaymentManagementPage: React.FC = () => {
                 </div>
             </div>
         );
-
     };
 
     const renderFilters = () => (
@@ -442,8 +464,8 @@ const PaymentManagementPage: React.FC = () => {
                                 key={tab.id}
                                 onClick={() => setViewMode(tab.id as ViewMode)}
                                 className={`${viewMode === tab.id
-                                    ? 'border-indigo-500 text-indigo-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                        ? 'border-indigo-500 text-indigo-600'
+                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     } whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm flex items-center`}
                             >
                                 <tab.icon className="h-5 w-5 mr-2" />
@@ -713,40 +735,8 @@ const PaymentManagementPage: React.FC = () => {
                 )}
             </div>
 
-            <CreatePaymentModal
-                isOpen={showCreateModal}
-                onClose={() => {
-                    setShowCreateModal(false);
-                    setEditingPayment(null);
-                }}
-                onSuccess={handleRefresh}
-                editingPayment={editingPayment}
-            />
-
-            {/* Payment Detail Modal */}
-            <PaymentDetailModal
-                isOpen={showDetailModal}
-                onClose={() => {
-                    setShowDetailModal(false);
-                    setSelectedPayment(null);
-                }}
-                payment={selectedPayment}
-                onUpdate={handleRefresh}
-                onEdit={handleEditPayment}
-                canManage={canManagePayments}
-            />
-
-            {/* Process Payment Modal */}
-            <ProcessPaymentModal
-                isOpen={showProcessModal}
-                onClose={() => {
-                    setShowProcessModal(false);
-                    setSelectedPayment(null);
-                }}
-                payment={selectedPayment}
-                onSuccess={handleRefresh}
-            />
-
+            {/* Modals would go here */}
+            {/* TODO: Add CreatePaymentModal, PaymentDetailModal, ProcessPaymentModal */}
         </MainLayout>
     );
 };
