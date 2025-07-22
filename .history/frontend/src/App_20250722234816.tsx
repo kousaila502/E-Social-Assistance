@@ -22,7 +22,6 @@ import AnnouncementManagementPage from './pages/AnnouncementManagementPage';
 
 import './index.css';
 import PaymentManagementPage from './pages/paymentManagementPage';
-import AnalyticsPage from './pages/AnalyticsPage';
 
 
 function App() {
