@@ -35,7 +35,7 @@ import {
     PlayIcon,
     StopIcon
 } from '@heroicons/react/24/outline';
-import PaymentDetailModal from '../components/Payment/paymentDetail';
+import PaymentDetailModal from '../components/Payment/PaymentDetail';
 
 type ViewMode = 'table' | 'details' | 'stats';
 

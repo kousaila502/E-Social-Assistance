@@ -34,24 +34,23 @@ const RequestSubmissionPage: React.FC = () => {
     }
 
     setIsSubmitting(true);
-
+    
     try {
-      const response = await requestService.create(formData);
+      // Expect DemandeResponse, not MessageResponse
+      const response = await requestService.create(formData) as { demande: { _id: string } };
 
-      if ('demande' in response && response.demande && response.demande._id) {
-        toast.success('Request submitted successfully! You will receive updates via email.');
-        navigate(`${ROUTES.REQUEST_DETAILS.replace(':id', response.demande._id)}`);
-      } else {
-        toast.success(response.message || 'Request submitted successfully!');
-        navigate(ROUTES.MY_REQUESTS);
-      }
+      toast.success('Request submitted successfully! You will receive updates via email.');
+      
+      // Navigate to the newly created request details or my requests page
+      navigate(`${ROUTES.REQUEST_DETAILS.replace(':id', response.demande._id)}`);
+      
     } catch (error: any) {
       console.error('Request submission error:', error);
-
-      const errorMessage = error?.message ||
-        error?.data?.message ||
-        'Failed to submit request. Please try again.';
-
+      
+      const errorMessage = error?.message || 
+                          error?.data?.message || 
+                          'Failed to submit request. Please try again.';
+      
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -59,14 +58,16 @@ const RequestSubmissionPage: React.FC = () => {
   };
 
   const handleSaveDraft = async (formData: Partial<CreateDemandeData>) => {
+    // For draft saving, we need at least title and description
     if (!formData.title || !formData.description) {
       toast.error('Please provide at least a title and description to save as draft.');
       return;
     }
 
     setIsSubmitting(true);
-
+    
     try {
+      // Use allowed urgencyLevel value (e.g., "routine" instead of "medium")
       const draftData: CreateDemandeData = {
         title: formData.title,
         description: formData.description,
@@ -76,22 +77,21 @@ const RequestSubmissionPage: React.FC = () => {
         urgencyLevel: formData.urgencyLevel || 'routine'
       };
 
-      const response = await requestService.create(draftData);
-
-      if ('demande' in response && response.demande && response.demande._id) {
-        toast.success('Draft saved successfully!');
-        navigate(ROUTES.MY_REQUESTS);
-      } else {
-        toast.success(response.message || 'Draft saved successfully!');
-        navigate(ROUTES.MY_REQUESTS);
-      }
+      // Expect DemandeResponse, not MessageResponse
+      const response = await requestService.create(draftData) as { demande: { _id: string } };
+      
+      toast.success('Draft saved successfully!');
+      
+      // Navigate to my requests page
+      navigate(ROUTES.MY_REQUESTS);
+      
     } catch (error: any) {
       console.error('Draft save error:', error);
-
-      const errorMessage = error?.message ||
-        error?.data?.message ||
-        'Failed to save draft. Please try again.';
-
+      
+      const errorMessage = error?.message || 
+                          error?.data?.message || 
+                          'Failed to save draft. Please try again.';
+      
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -162,9 +162,9 @@ const RequestSubmissionPage: React.FC = () => {
                     <span className="ml-2 text-green-600 font-medium">✓ Verified</span>
                   )}
                 </p>
-                {Array.isArray(user.eligibility.categories) && user.eligibility.categories.length > 0 && (
+                {user.eligibility.categories?.length > 0 && (
                   <p className="text-sm text-blue-700 mt-1">
-                    Eligible Categories: {user.eligibility.categories.join(', ')}
+                    Eligible Categories: {user.eligibility.categories?.join(', ')}
                   </p>
                 )}
               </div>

@@ -62,10 +62,10 @@ const requestService = {
   // 🔥 CREATE REQUEST - ENHANCED ERROR HANDLING
   create: async (requestData: CreateDemandeData): Promise<DemandeResponse | MessageResponse> => {
     try {
-      const response = await api.post(
+      const response = await api.post<DemandeResponse | MessageResponse>(
         API_CONFIG.ENDPOINTS.DEMANDES.CREATE,
         requestData
-      ) as DemandeResponse | MessageResponse;
+      );
       return response;
     } catch (error: any) {
       throw error;

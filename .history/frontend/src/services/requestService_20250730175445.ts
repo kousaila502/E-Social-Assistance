@@ -65,7 +65,7 @@ const requestService = {
       const response = await api.post(
         API_CONFIG.ENDPOINTS.DEMANDES.CREATE,
         requestData
-      ) as DemandeResponse | MessageResponse;
+      );
       return response;
     } catch (error: any) {
       throw error;

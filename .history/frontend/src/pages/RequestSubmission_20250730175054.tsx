@@ -162,9 +162,9 @@ const RequestSubmissionPage: React.FC = () => {
                     <span className="ml-2 text-green-600 font-medium">✓ Verified</span>
                   )}
                 </p>
-                {Array.isArray(user.eligibility.categories) && user.eligibility.categories.length > 0 && (
+                {user.eligibility.categories?.length > 0 && (
                   <p className="text-sm text-blue-700 mt-1">
-                    Eligible Categories: {user.eligibility.categories.join(', ')}
+                    Eligible Categories: {user.eligibility.categories?.join(', ')}
                   </p>
                 )}
               </div>
