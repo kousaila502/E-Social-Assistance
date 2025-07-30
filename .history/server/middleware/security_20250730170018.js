@@ -47,8 +47,8 @@ const setupHelmet = () => {
 const setupCORS = () => {
   const allowedOrigins = [
     'http://localhost:5173',
-    'https://social-platform.vercel.app',
-    'https://enterprise-social-platform.onrender.com'
+    'https://social-platform.vercel.app', // replace with your actual Vercel domain
+    'https://enterprise-social-platform.onrender.com' // optional: backend origin itself
   ];
 
   return cors({

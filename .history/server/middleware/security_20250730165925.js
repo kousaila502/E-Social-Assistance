@@ -6,11 +6,11 @@ const morgan = require('morgan');
 
 // Helper function to get client IP
 const getClientIP = (req) => {
-  return req.ip ||
-    req.connection?.remoteAddress ||
-    req.socket?.remoteAddress ||
-    req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
-    '127.0.0.1';
+  return req.ip || 
+         req.connection?.remoteAddress || 
+         req.socket?.remoteAddress ||
+         req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+         '127.0.0.1';
 };
 
 // Setup Helmet for security headers
@@ -45,17 +45,23 @@ const setupHelmet = () => {
 
 // Setup CORS
 const setupCORS = () => {
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'https://social-platform.vercel.app',
-    'https://enterprise-social-platform.onrender.com'
-  ];
+  const allowedOrigins = process.env.NODE_ENV === 'production' 
+    ? const allowedOrigins = [
+  'http://localhost:5173',
+  'https://your-vercel-app.vercel.app', // replace with your actual Vercel domain
+  'https://enterprise-social-platform.onrender.com' // optional: backend origin itself
+];
+    : [
+        'http://localhost:5173',
+        'http://localhost:3001',
+        'http://127.0.0.1:3000'
+      ];
 
   return cors({
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) return callback(null, true);
-
+      
       if (allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -149,9 +155,9 @@ const apiRateLimiter = rateLimit({
   },
   skip: (req) => {
     // Skip for health checks and static files
-    return req.path.startsWith('/health') ||
-      req.path.startsWith('/static') ||
-      req.method === 'OPTIONS';
+    return req.path.startsWith('/health') || 
+           req.path.startsWith('/static') ||
+           req.method === 'OPTIONS';
   }
 });
 
@@ -189,13 +195,13 @@ const requestLogger = () => {
     return morgan('combined', {
       skip: (req, res) => {
         // Skip logging for health checks and static files
-        return req.path === '/health' ||
-          req.path.startsWith('/static') ||
-          req.path.startsWith('/favicon');
+        return req.path === '/health' || 
+               req.path.startsWith('/static') ||
+               req.path.startsWith('/favicon');
       }
     });
   }
-
+  
   // Production logging (only errors and important requests)
   return morgan('combined', {
     skip: (req, res) => {
@@ -214,10 +220,10 @@ const securityHeaders = (req, res, next) => {
   // Additional custom security headers
   res.setHeader('X-API-Version', '1.0');
   res.setHeader('X-Response-Time', Date.now() - req.startTime);
-
+  
   // Remove server information
   res.removeHeader('X-Powered-By');
-
+  
   // Set custom headers based on environment
   if (process.env.NODE_ENV === 'production') {
     res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
@@ -225,7 +231,7 @@ const securityHeaders = (req, res, next) => {
     res.setHeader('X-Frame-Options', 'DENY');
     res.setHeader('X-XSS-Protection', '1; mode=block');
   }
-
+  
   next();
 };
 
@@ -235,13 +241,13 @@ const ipWhitelist = (allowedIPs = []) => {
     if (process.env.NODE_ENV === 'development') {
       return next(); // Skip in development
     }
-
+    
     const clientIP = getClientIP(req);
-
+    
     // Add default allowed IPs
     const defaultAllowed = ['127.0.0.1', '::1', 'localhost'];
     const allAllowed = [...defaultAllowed, ...allowedIPs];
-
+    
     if (allAllowed.includes(clientIP)) {
       next();
     } else {
@@ -257,7 +263,7 @@ const ipWhitelist = (allowedIPs = []) => {
 // Request timing middleware
 const requestTiming = (req, res, next) => {
   req.startTime = Date.now();
-
+  
   // Log slow requests
   res.on('finish', () => {
     const duration = Date.now() - req.startTime;
@@ -265,7 +271,7 @@ const requestTiming = (req, res, next) => {
       console.warn(`Slow request: ${req.method} ${req.path} took ${duration}ms`);
     }
   });
-
+  
   next();
 };
 

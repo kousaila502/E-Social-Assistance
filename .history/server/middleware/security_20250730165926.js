@@ -45,38 +45,44 @@ const setupHelmet = () => {
 
 // Setup CORS
 const setupCORS = () => {
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'https://social-platform.vercel.app',
-    'https://enterprise-social-platform.onrender.com'
-  ];
+  const allowedOrigins = process.env.NODE_ENV === 'production'
+    ? const allowedOrigins = [
+      'http://localhost:5173',
+      'https://your-vercel-app.vercel.app', // replace with your actual Vercel domain
+      'https://enterprise-social-platform.onrender.com' // optional: backend origin itself
+    ];
+    : [
+  'http://localhost:5173',
+  'http://localhost:3001',
+  'http://127.0.0.1:3000'
+];
 
-  return cors({
-    origin: (origin, callback) => {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
-      if (!origin) return callback(null, true);
+return cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
 
-      if (allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS policy'), false);
-      }
-    },
-    credentials: true, // Allow cookies
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: [
-      'Origin',
-      'X-Requested-With',
-      'Content-Type',
-      'Accept',
-      'Authorization',
-      'Cache-Control',
-      'Pragma'
-    ],
-    exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining'],
-    maxAge: 86400, // 24 hours
-    optionsSuccessStatus: 200
-  });
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS policy'), false);
+    }
+  },
+  credentials: true, // Allow cookies
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cache-Control',
+    'Pragma'
+  ],
+  exposedHeaders: ['X-RateLimit-Limit', 'X-RateLimit-Remaining'],
+  maxAge: 86400, // 24 hours
+  optionsSuccessStatus: 200
+});
 };
 
 // General rate limiter

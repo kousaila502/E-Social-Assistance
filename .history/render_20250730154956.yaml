@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: social-assistance-backend
+    rootDir: server
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: MONGO_URL
+        sync: false   # Set this securely in the Render dashboard
+      - key: JWT_SECRET
+        sync: false   # Set this securely in the Render dashboard
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000  # Optional: Render sets PORT automatically, but your app defaults to 8080 if not set
+    healthCheckPath: /api/v1/health
+    healthCheckIntervalSeconds: 30
+    healthCheckTimeoutSeconds: 10

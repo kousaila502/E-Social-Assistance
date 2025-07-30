@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: social-assistance-backend             # ✅ Good, clear name
+    rootDir: server                             # ✅ Monorepo root directory set correctly
+    env: node                                   # ✅ Node.js environment
+    buildCommand: npm install                   # ✅ Standard install
+    startCommand: npm start                     # ✅ Uses your package.json start script
+    autoDeploy: true                            # ✅ Auto deploy on push to GitHub
+
+    envVars:
+      - key: MONGO_URL
+        sync: false                             # ✅ Correct — don’t hardcode secrets
+      - key: JWT_SECRET
+        sync: false                             # ✅ Correct — secure secret
+      - key: NODE_ENV
+        value: production                       # ✅ Environment set
+      - key: PORT
+        value: 10000                            # ✅ Optional — fallback if needed (your app defaults to 8080)
+
+    healthCheckPath: /api/v1/health             # ✅ Health endpoint you implemented
+    healthCheckIntervalSeconds: 30              # ✅ Reasonable interval
+    healthCheckTimeoutSeconds: 10   
