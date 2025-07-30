@@ -5,10 +5,10 @@ import { useAuth } from '../hooks/useAuth';
 
 // Analytics Components
 import MetricCard from '../components/Analytics/metricCard';
-import TrendChart from '../components/Analytics/trendChart';
+import TrendChart from '../components/Analytics/TrendChart';
 import CategoryChart from '../components/Analytics/categoryChart';
-import PerformanceMetrics from '../components/Analytics/performanceMetrics';
-import GeographicInsights from '../components/Analytics/geographicInsights';
+import PerformanceMetrics from '../components/Analytics/PerformanceMetrics';
+import GeographicInsights from '../components/Analytics/GeographicInsights';
 
 // Analytics Service
 import analyticsService, { AnalyticsDashboard } from '../services/analyticsService';
