@@ -350,24 +350,10 @@ CMD ["npm", "start"]
 - Follow commit message conventions
 - Ensure security compliance
 
-## 📞 Support
-
-- **Technical Issues**: Create GitHub issue
-- **Feature Requests**: Discussion in GitHub Discussions
-- **Security Vulnerabilities**: Email security@socialassistance.com
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🙏 Acknowledgments
 
 - **Algerian Social Services**: Domain expertise and requirements
 - **Open Source Community**: Libraries and frameworks used
-- **Development Team**: Contributors and maintainers
 
----
-
-**Built with ❤️ for social impact and community welfare**
 
 *For detailed API documentation, visit `/api-docs` when running the server.*
